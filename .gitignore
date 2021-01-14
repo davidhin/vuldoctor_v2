@@ -20,6 +20,16 @@ server/node_modules
 .env.production.local
 .eslintcache
 
+# build database
+build_database/.ropeproject
+build_database/nvd
+*.json
+
+# keys / tokens
+.env
+server/.env
+server/serviceAccount.json
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
