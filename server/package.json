@@ -17,5 +17,8 @@
     "mongo-sanitize": "^1.1.0",
     "nodemon": "^2.0.7",
     "query-string": "^6.13.8"
+  },
+  "engines": {
+    "node": "14.x"
   }
 }
