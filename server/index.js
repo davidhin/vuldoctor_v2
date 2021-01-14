@@ -4,9 +4,9 @@ const cors = require("cors");
 const app = express(); // create express app
 const mongoose = require("mongoose");
 const decodeIDToken = require("./authenticateToken");
-const { MONGODB_TOKEN } = process.env;
 const dotenv = require("dotenv");
 dotenv.config({ path: "../.env" });
+const { MONGODB_TOKEN } = process.env;
 
 var routes = require("./routes");
 
