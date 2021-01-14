@@ -26,11 +26,10 @@
   },
   "scripts": {
     "start-client": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && (cd server && npm install)",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "heroku-prebuild": "cd server && npm install && cd ..",
-    "start": "npm run build && (cd server && npm start)"
+    "start": "cd server && npm start"
   },
   "eslintConfig": {
     "extends": [
