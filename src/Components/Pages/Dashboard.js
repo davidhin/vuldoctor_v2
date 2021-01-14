@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-function Dashboard() {
+function Dashboard(props) {
+  useEffect(() => {
+    props.changePage("Dashboard");
+  });
+
   return <div></div>;
 }
 
