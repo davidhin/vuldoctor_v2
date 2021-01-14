@@ -11,8 +11,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
-import { Link, Route, Switch } from "react-router-dom";
-import SimpleMenu from "./Menu";
+import { Link, Redirect, Route, Switch } from "react-router-dom";
+import ProfileMenu from "./Menu";
 import Dashboard from "./Pages/Dashboard";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
@@ -77,10 +77,6 @@ function Application(props) {
     setMobileOpen(!mobileOpen);
   };
 
-  const changePage = (name) => {
-    setToolbarName(name);
-  };
-
   const drawer = (
     <div>
       <Typography variant="h5" noWrap className={classes.logo}>
@@ -93,9 +89,6 @@ function Application(props) {
           key={"Dashboard"}
           component={Link}
           to="/dashboard"
-          onClick={() => {
-            changePage("Dashboard");
-          }}
         >
           <ListItemText primary={"Dashboard"} />
         </ListItem>
@@ -105,9 +98,6 @@ function Application(props) {
           key={"Home"}
           component={Link}
           to="/"
-          onClick={() => {
-            changePage("Home");
-          }}
         >
           <ListItemText primary={"Home"} />
         </ListItem>
@@ -119,63 +109,77 @@ function Application(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <div className={classes.root}>
-      <CssBaseline />
-      <AppBar position="fixed" elevation={0} className={classes.appBar}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            className={classes.menuButton}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            {toolbarName}
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <nav className={classes.drawer} aria-label="mailbox folders">
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-        <Hidden smUp implementation="css">
-          <Drawer
-            container={container}
-            variant="temporary"
-            anchor={theme.direction === "rtl" ? "right" : "left"}
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-        <Hidden xsDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-      </nav>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/dashboard" component={Dashboard} />
-        </Switch>
-      </main>
-    </div>
+    <MuiThemeProvider theme={VDTheme}>
+      <div className={classes.root}>
+        <CssBaseline />
+        <AppBar position="fixed" elevation={0} className={classes.appBar}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              className={classes.menuButton}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap style={{ flex: 1 }}>
+              {toolbarName}
+            </Typography>
+            <ProfileMenu isLoggedIn={props.isLoggedIn} />
+          </Toolbar>
+        </AppBar>
+        <nav className={classes.drawer} aria-label="mailbox folders">
+          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+          <Hidden smUp implementation="css">
+            <Drawer
+              container={container}
+              variant="temporary"
+              anchor={VDTheme.direction}
+              open={mobileOpen}
+              onClose={handleDrawerToggle}
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              ModalProps={{
+                keepMounted: true, // Better open performance on mobile.
+              }}
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+          <Hidden xsDown implementation="css">
+            <Drawer
+              classes={{
+                paper: classes.drawerPaper,
+              }}
+              variant="permanent"
+              open
+            >
+              {drawer}
+            </Drawer>
+          </Hidden>
+        </nav>
+        <main className={classes.content}>
+          <div className={classes.toolbar} />
+          <Switch>
+            <Route exact path="/">
+              <Home changePage={(name) => setToolbarName(name)} />
+            </Route>
+            <Route path="/dashboard">
+              <Dashboard changePage={(name) => setToolbarName(name)} />
+            </Route>
+            <Route exact path="/login">
+              {props.isLoggedIn ? (
+                <Redirect to="/" />
+              ) : (
+                <Login changePage={(name) => setToolbarName(name)} />
+              )}
+            </Route>
+          </Switch>
+        </main>
+      </div>
+    </MuiThemeProvider>
   );
 }
 
