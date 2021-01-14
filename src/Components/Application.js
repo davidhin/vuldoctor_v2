@@ -6,14 +6,17 @@ import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import { Link, Route, Switch } from "react-router-dom";
+import SimpleMenu from "./Menu";
 import Dashboard from "./Pages/Dashboard";
 import Home from "./Pages/Home";
+import Login from "./Pages/Login";
+import VDTheme from "./Theme";
 
 const drawerWidth = 240;
 
@@ -67,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
 function Application(props) {
   const { window } = props;
   const classes = useStyles();
-  const theme = useTheme();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [toolbarName, setToolbarName] = React.useState("Home");
 
