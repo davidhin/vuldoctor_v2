@@ -4,7 +4,10 @@ const cors = require("cors");
 const app = express(); // create express app
 const mongoose = require("mongoose");
 const decodeIDToken = require("./authenticateToken");
+const dotenv = require("dotenv");
+dotenv.config({ path: "../.env" });
 const { MONGODB_TOKEN } = process.env;
+
 var routes = require("./routes");
 
 // add middleware - react
@@ -42,6 +45,4 @@ app.use((req, res, next) => {
 });
 
 // start express server on port 5000
-app.listen(5000, () => {
-  console.log("server started on port 5000");
-});
+app.listen(process.env.PORT || 5000);
