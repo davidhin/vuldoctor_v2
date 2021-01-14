@@ -13,6 +13,8 @@ import MenuIcon from "@material-ui/icons/Menu";
 import React from "react";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import ProfileMenu from "./Menu";
+import CPEs from "./Pages/CPEs";
+import CVEs from "./Pages/CVEs";
 import Dashboard from "./Pages/Dashboard";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
@@ -101,6 +103,24 @@ function Application(props) {
         >
           <ListItemText primary={"Home"} />
         </ListItem>
+        <ListItem
+          button
+          className={classes.toolbarButton}
+          key={"CVEs"}
+          component={Link}
+          to="/cves"
+        >
+          <ListItemText primary={"CVEs"} />
+        </ListItem>
+        <ListItem
+          button
+          className={classes.toolbarButton}
+          key={"CPEs"}
+          component={Link}
+          to="/cpes"
+        >
+          <ListItemText primary={"CPEs"} />
+        </ListItem>
       </List>
     </div>
   );
@@ -168,6 +188,12 @@ function Application(props) {
             </Route>
             <Route path="/dashboard">
               <Dashboard changePage={(name) => setToolbarName(name)} />
+            </Route>
+            <Route path="/cves">
+              <CVEs changePage={(name) => setToolbarName(name)} />
+            </Route>
+            <Route path="/cpes">
+              <CPEs changePage={(name) => setToolbarName(name)} />
             </Route>
             <Route exact path="/login">
               {props.isLoggedIn ? (
