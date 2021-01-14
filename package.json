@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "react-scripts start"
+    "heroku-prebuild": "cd server && npm install && cd ..",
+    "start": "npm run build && (cd server && npm start)"
   },
   "eslintConfig": {
     "extends": [
