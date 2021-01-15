@@ -4,15 +4,17 @@ import Application from "./Components/Application";
 import fire from "./fire.js";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [user, setUser] = useState(null);
 
   fire.auth().onAuthStateChanged((user) => {
+    setUser(user);
     return user ? setIsLoggedIn(true) : setIsLoggedIn(false);
   });
 
   return (
     <Router>
-      <Application isLoggedIn={isLoggedIn} />
+      <Application isLoggedIn={isLoggedIn} user={user} />
     </Router>
   );
 }

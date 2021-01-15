@@ -16,6 +16,7 @@ import ProfileMenu from "./Menu";
 import CPEs from "./Pages/CPEs";
 import CVEs from "./Pages/CVEs";
 import Dashboard from "./Pages/Dashboard";
+import GitHub from "./Pages/GitHub";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import VDTheme from "./Theme";
@@ -41,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "100",
     color: "black",
     padding: theme.spacing(3),
+    position: "absolute",
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -120,6 +122,15 @@ function Application(props) {
           to="/cpes"
         >
           <ListItemText primary={"CPEs"} />
+        </ListItem>{" "}
+        <ListItem
+          button
+          className={classes.toolbarButton}
+          key={"GitHub"}
+          component={Link}
+          to="/github"
+        >
+          <ListItemText primary={"GitHub"} />
         </ListItem>
       </List>
     </div>
@@ -184,7 +195,10 @@ function Application(props) {
           <div className={classes.toolbar} />
           <Switch>
             <Route exact path="/">
-              <Home changePage={(name) => setToolbarName(name)} />
+              <Home
+                changePage={(name) => setToolbarName(name)}
+                user={props.user}
+              />
             </Route>
             <Route path="/dashboard">
               <Dashboard changePage={(name) => setToolbarName(name)} />
@@ -200,6 +214,16 @@ function Application(props) {
                 <Redirect to="/" />
               ) : (
                 <Login changePage={(name) => setToolbarName(name)} />
+              )}
+            </Route>
+            <Route exact path="/github">
+              {props.isLoggedIn === false ? (
+                <Redirect to="/login" />
+              ) : (
+                <GitHub
+                  changePage={(name) => setToolbarName(name)}
+                  user={props.user}
+                />
               )}
             </Route>
           </Switch>

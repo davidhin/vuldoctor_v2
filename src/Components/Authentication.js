@@ -1,7 +1,4 @@
-import fire from "../fire";
-
-export const createToken = async () => {
-  const user = fire.auth().currentUser;
+export const createToken = async (user) => {
   const token = user && (await user.getIdToken());
   const payloadHeader = {
     headers: {
