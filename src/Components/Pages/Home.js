@@ -12,7 +12,7 @@ function Home(props) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(`submitted: ${name} `);
-    const header = await createToken();
+    const header = await createToken(props.user);
     try {
       const payload = { name };
       axios.post("/ping", payload, header);
