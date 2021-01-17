@@ -11,7 +11,7 @@ const ReportData = (props) => {
     if (props.user) {
       const getReportData = async () => {
         const header = await createToken(props.user);
-        const res = await axios.get(`/report/${projectid}`, header);
+        const res = await axios.get(`/getreport/${projectid}`, header);
         console.log(res);
         setLoading(false);
       };
