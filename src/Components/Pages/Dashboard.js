@@ -1,8 +1,10 @@
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useEffect } from "react";
 import Demo from "../Report/Demo";
+import ProjectsTable from "../Tables/ProjectsTable";
 import FileUpload from "./FileUpload";
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +28,7 @@ function Dashboard(props) {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
             <FileUpload user={props.user} />
           </Paper>
@@ -36,7 +38,13 @@ function Dashboard(props) {
           <Demo />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper className={classes.paper}>Something Something</Paper>
+          <Paper className={classes.paper}>
+            {!props.user ? (
+              <CircularProgress />
+            ) : (
+              <ProjectsTable user={props.user} />
+            )}
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <Paper className={classes.paper}>xs=6 sm=3</Paper>
