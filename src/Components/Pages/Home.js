@@ -22,7 +22,7 @@ function Home(props) {
   };
 
   const getEntries = async () => {
-    const header = await createToken();
+    const header = await createToken(props.user);
     try {
       const res = await axios.get("/ping", header);
       console.log(res.data);

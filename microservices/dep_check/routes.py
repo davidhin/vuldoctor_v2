@@ -2,7 +2,6 @@ import glob
 import json
 import os
 import shutil
-import uuid
 from pathlib import Path
 
 from flask import Blueprint, Response, flash, request
@@ -52,7 +51,7 @@ def upload_file():
         return resp
 
     # Serialise files onto disk
-    projectid = str(uuid.uuid4().hex)
+    projectid = request.args.get("projectID")
     filedir = "upload/" + uid + "/" + projectid + "/"
     Path(filedir).mkdir(parents=True, exist_ok=True)
     files = []

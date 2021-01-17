@@ -6,8 +6,10 @@ import {
 } from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DeleteIcon from "@material-ui/icons/Delete";
+import axios from "axios";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import short from "short-uuid";
 import { createToken } from "../Authentication";
 
 function FileUploadDropZone(props) {
@@ -121,7 +123,9 @@ const FileUpload = (props) => {
   const handleSubmit = async (files) => {
     const data = new FormData();
     let header = await createToken(props.user);
-    const depCheckURL = "https://depscan-oype6ttuha-an.a.run.app/";
+    let projectID = short.generate();
+    const depCheckURL = `https://depscan-oype6ttuha-an.a.run.app?projectID=${projectID}`;
+    axios.post("/addProject", { projectID: projectID }, header);
     files.map((file) => {
       data.append("file", file);
     });

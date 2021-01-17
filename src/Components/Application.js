@@ -19,6 +19,7 @@ import Dashboard from "./Pages/Dashboard";
 import GitHub from "./Pages/GitHub";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
+import Report from "./Pages/Report";
 import VDTheme from "./Theme";
 
 const drawerWidth = 240;
@@ -201,10 +202,14 @@ function Application(props) {
               />
             </Route>
             <Route path="/dashboard">
-              <Dashboard
-                changePage={(name) => setToolbarName(name)}
-                user={props.user}
-              />
+              {props.isLoggedIn === false ? (
+                <Redirect to="/login" />
+              ) : (
+                <Dashboard
+                  changePage={(name) => setToolbarName(name)}
+                  user={props.user}
+                />
+              )}
             </Route>
             <Route path="/cves">
               <CVEs changePage={(name) => setToolbarName(name)} />
@@ -214,7 +219,7 @@ function Application(props) {
             </Route>
             <Route exact path="/login">
               {props.isLoggedIn ? (
-                <Redirect to="/" />
+                <Redirect to="/dashboard" />
               ) : (
                 <Login changePage={(name) => setToolbarName(name)} />
               )}
@@ -224,6 +229,16 @@ function Application(props) {
                 <Redirect to="/login" />
               ) : (
                 <GitHub
+                  changePage={(name) => setToolbarName(name)}
+                  user={props.user}
+                />
+              )}
+            </Route>
+            <Route exact path="/report/:projectid">
+              {props.isLoggedIn === false ? (
+                <Redirect to="/login" />
+              ) : (
+                <Report
                   changePage={(name) => setToolbarName(name)}
                   user={props.user}
                 />
