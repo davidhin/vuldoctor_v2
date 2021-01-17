@@ -1,5 +1,6 @@
 // https://github.com/mbrn/material-table
 import Button from "@material-ui/core/Button";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import Alert from "@material-ui/lab/Alert";
 import axios from "axios";
 import MaterialTable from "material-table";
@@ -30,6 +31,7 @@ const ReposTable = (props) => {
   const [ghtoken, setGHtoken] = useState(null);
   const [data, setData] = useState([]);
   const [infobox, setInfobox] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Usage
   // formatBytes(bytes,decimals)
@@ -77,6 +79,7 @@ const ReposTable = (props) => {
             return res;
           });
         setData(repos);
+        setLoading(false);
       };
 
       // Get code from URL parameter
@@ -106,6 +109,8 @@ const ReposTable = (props) => {
         if (gh_token.data) {
           setGHtoken(gh_token.data);
           getRepositories(gh_token.data);
+        } else {
+          setLoading(false);
         }
       };
 
@@ -121,49 +126,55 @@ const ReposTable = (props) => {
 
   return (
     <div style={{ maxWidth: "100%" }}>
-      {!infobox ? null : (
-        <div>
-          <Alert severity="info" elevation={3}>
-            You've linked your GitHub! Be patient, as it may take up to 5
-            minutes for VulDoctor to connect with your account. If your
-            repositories are not showing up, try refreshing the page.
-          </Alert>
-          <br />
-        </div>
-      )}
-      {ghtoken ? (
-        <div className="button-right">
-          <Button variant="contained" color="primary" href={OAuth}>
-            View GitHub Access Privileges
-          </Button>
-        </div>
+      {loading ? (
+        <CircularProgress />
       ) : (
         <div>
-          <Button variant="contained" color="primary" href={githubAuth}>
-            Sign Into Github
-          </Button>
+          {!infobox ? null : (
+            <div>
+              <Alert severity="info" elevation={3}>
+                You've linked your GitHub! Be patient, as it may take up to 5
+                minutes for VulDoctor to connect with your account. If your
+                repositories are not showing up, try refreshing the page.
+              </Alert>
+              <br />
+            </div>
+          )}
+          {ghtoken ? (
+            <div className="button-right">
+              <Button variant="contained" color="primary" href={OAuth}>
+                View GitHub Access Privileges
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <Button variant="contained" color="primary" href={githubAuth}>
+                Sign Into Github
+              </Button>
+            </div>
+          )}
+          <br />
+          <MaterialTable
+            icons={TABLEICONS}
+            columns={[
+              { title: "Repository", field: "full_name" },
+              {
+                title: "Size",
+                field: "size",
+                customSort: (a, b) => parseSize(a.size) - parseSize(b.size),
+              },
+              { title: "Private", field: "private" },
+              { title: "Add to Projects", field: "add" },
+            ]}
+            data={data}
+            title="Repositories"
+            options={{
+              pageSize: 10,
+              pageSizeOptions: [10, 20, 50],
+            }}
+          />
         </div>
       )}
-      <br />
-      <MaterialTable
-        icons={TABLEICONS}
-        columns={[
-          { title: "Repository", field: "full_name" },
-          {
-            title: "Size",
-            field: "size",
-            customSort: (a, b) => parseSize(a.size) - parseSize(b.size),
-          },
-          { title: "Private", field: "private" },
-          { title: "Add to Projects", field: "add" },
-        ]}
-        data={data}
-        title="Repositories"
-        options={{
-          pageSize: 10,
-          pageSizeOptions: [10, 20, 50],
-        }}
-      />
     </div>
   );
 };
