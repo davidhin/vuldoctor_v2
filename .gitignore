@@ -30,6 +30,10 @@ build_database/nvd
 server/.env
 server/serviceAccount.json
 
+# dep_check
+microservices/dep_check/__pycache__
+microservices/dep_check/db
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

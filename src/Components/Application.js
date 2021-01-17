@@ -201,7 +201,10 @@ function Application(props) {
               />
             </Route>
             <Route path="/dashboard">
-              <Dashboard changePage={(name) => setToolbarName(name)} />
+              <Dashboard
+                changePage={(name) => setToolbarName(name)}
+                user={props.user}
+              />
             </Route>
             <Route path="/cves">
               <CVEs changePage={(name) => setToolbarName(name)} />
