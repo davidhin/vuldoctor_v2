@@ -32,7 +32,6 @@ RUN pip install firebase-admin
 ENV VDB_HOME=/app/db
 ENV NVD_START_YEAR=2010
 ENV GITHUB_PAGE_COUNT=5
-ENV GITHUB_TOKEN=9fb66f1a48ad392bb3bfdfc3116bb9bfe7f82e34
 ENV GOOGLE_APPLICATION_CREDENTIALS=/app/solidmantra.json
 
 # Run the web service on container startup. Here we use the gunicorn
