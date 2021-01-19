@@ -125,7 +125,9 @@ const FileUpload = (props) => {
     let header = await createToken(props.user);
     let projectID = short.generate();
     const depCheckURL = `https://depscan-oype6ttuha-an.a.run.app?projectID=${projectID}`;
-    axios.post("/addProject", { projectID: projectID }, header);
+    axios.post("/addProject", { projectID: projectID }, header).then((res) => {
+      props.getProjects();
+    });
     files.map((file) => {
       data.append("file", file);
     });
