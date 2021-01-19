@@ -51,7 +51,7 @@ module.exports = {
           console.log(results);
         }
       );
-      return res.status(200);
+      return res.status(200).send("Added Project!");
     }
     return res.status(403).send("Not authorized");
   },
