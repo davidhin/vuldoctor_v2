@@ -78,7 +78,7 @@ function Application(props) {
   const { window } = props;
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [toolbarName, setToolbarName] = React.useState("Home");
+  const [toolbarName, setToolbarName] = React.useState("");
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -246,10 +246,16 @@ function Application(props) {
               {props.isLoggedIn === false ? (
                 <Redirect to="/login" />
               ) : (
-                <Report
-                  changePage={(name) => setToolbarName(name)}
-                  user={props.user}
-                />
+                <div>
+                  {!props.user ? (
+                    <CircularProgress />
+                  ) : (
+                    <Report
+                      changePage={(name) => setToolbarName(name)}
+                      user={props.user}
+                    />
+                  )}
+                </div>
               )}
             </Route>
           </Switch>
