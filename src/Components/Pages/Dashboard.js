@@ -2,7 +2,9 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
-import React, { useEffect } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { createToken } from "../Authentication";
 import Demo from "../Report/Demo";
 import ProjectsTable from "../Tables/ProjectsTable";
 import FileUpload from "./FileUpload";
@@ -20,6 +22,13 @@ const useStyles = makeStyles((theme) => ({
 
 function Dashboard(props) {
   const classes = useStyles();
+  const [projects, setProjects] = useState([{ projectid: "1234" }]);
+
+  const getProjects = async () => {
+    const header = await createToken(props.user);
+    let res = await axios.get("/getProjects", header);
+    setProjects(res["data"]);
+  };
 
   useEffect(() => {
     props.changePage("Dashboard");
@@ -30,7 +39,7 @@ function Dashboard(props) {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={12}>
           <Paper className={classes.paper}>
-            <FileUpload user={props.user} />
+            <FileUpload user={props.user} getProjects={getProjects} />
           </Paper>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={6}>
@@ -42,7 +51,11 @@ function Dashboard(props) {
             {!props.user ? (
               <CircularProgress />
             ) : (
-              <ProjectsTable user={props.user} />
+              <ProjectsTable
+                user={props.user}
+                projects={projects}
+                getProjects={getProjects}
+              />
             )}
           </Paper>
         </Grid>

@@ -8,19 +8,17 @@ import { createToken } from "../Authentication";
 import { TABLEICONS } from "./tableIcons";
 
 const ProjectsTable = (props) => {
-  const [data, setData] = useState([{ projectid: "1234" }]);
+  let data = props.projects;
   const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
     if (props.user) {
-      const getProjects = async () => {
-        const header = await createToken(props.user);
-        let a = await axios.get("/getProjects", header);
-        setData(a["data"]);
+      const run = async () => {
+        await props.getProjects();
         setLoading(false);
       };
-      getProjects();
+      run();
     }
   }, []);
 
