@@ -129,13 +129,7 @@ const FileUpload = (props) => {
     files.map((file) => {
       data.append("file", file);
     });
-    fetch(depCheckURL, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: header["headers"]["Authorization"],
-      }),
-    }).then((result) => {
+    axios.post(depCheckURL, data, header).then((result) => {
       console.log(result);
     });
   };
