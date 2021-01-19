@@ -15,5 +15,12 @@ export VDB_HOME=/app/db
 vdb --cache
 ```
 
+Or build using existing image:
+```
+docker run --rm -v $PWD:/app --env GITHUB_TOKEN=$(echo $GITHUB_TOKEN) gcr.io/solid-mantra-301604/depscan:latest vdb --cache
+docker build . --tag gcr.io/solid-mantra-301604/depscan; docker push gcr.io/solid-mantra-301604/depscan:latest
+```
+Then, re-deploy on Google Cloud Run manually (TODO - find an automated way to do this. Otherwise, have to redeploy every 8 days to keep up with NVD database)
+
 Also need to put service account json in the root directory, named
 `solidmantra.json`. Download from Google Cloud Services.
