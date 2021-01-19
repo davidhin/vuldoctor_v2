@@ -1,5 +1,4 @@
 import { Typography } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
 import {
   default as Button,
   default as IconButton,
@@ -146,9 +145,7 @@ const FileUpload = (props) => {
         <div>
           <div className="primaryBox">
             <Typography variant="h5" component="h5" color="black">
-              <Box fontWeight="fontWeightBold" m={1}>
-                Upload File
-              </Box>
+              Upload File
             </Typography>
             <br />
             <div className="center">
