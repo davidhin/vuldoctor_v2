@@ -1,10 +1,8 @@
 // https://github.com/mbrn/material-table
 import CircularProgress from "@material-ui/core/CircularProgress";
-import axios from "axios";
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { createToken } from "../Authentication";
 import { TABLEICONS } from "./tableIcons";
 
 const ProjectsTable = (props) => {
