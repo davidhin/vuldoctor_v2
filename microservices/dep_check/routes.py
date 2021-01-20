@@ -8,7 +8,7 @@ from flask import Blueprint, Response, flash, request
 from flask_cors import CORS
 from google.cloud import storage
 
-from authenticateToken import authenticateToken
+from fire import authenticateToken, deleteDB, setDB
 from parsers import checkFile
 
 # Registering routes to 'routes' so they can be accessed in other files
@@ -52,6 +52,7 @@ def upload_file():
 
     # Serialise files onto disk
     projectid = request.args.get("projectID")
+    setDB(uid, projectid)
     filedir = "upload/" + uid + "/" + projectid + "/"
     Path(filedir).mkdir(parents=True, exist_ok=True)
     files = []
@@ -90,6 +91,10 @@ def upload_file():
 
     # Get project type and upload results
     results_files = glob.glob(filedir + "reports/*")
+    if len(results_files) == 0:
+        deleteDB(uid, projectid)
+        return Response(status=400)
+
     depscan_file = [i for i in results_files if "depscan" in i]
     if len(depscan_file) == 0:
         print("No vulnerabilities detected.")
@@ -111,4 +116,5 @@ def upload_file():
 
     # Remove files from container
     shutil.rmtree(filedir)
+    deleteDB(uid, projectid)
     return Response(status=200)

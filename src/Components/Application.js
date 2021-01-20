@@ -1,4 +1,5 @@
 import AppBar from "@material-ui/core/AppBar";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
 import Hidden from "@material-ui/core/Hidden";
@@ -58,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(6),
+    padding: theme.spacing(3),
+    paddingTop: theme.spacing(6),
   },
   logo: {
     textAlign: "center",
@@ -76,7 +78,7 @@ function Application(props) {
   const { window } = props;
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [toolbarName, setToolbarName] = React.useState("Home");
+  const [toolbarName, setToolbarName] = React.useState("");
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -205,10 +207,16 @@ function Application(props) {
               {props.isLoggedIn === false ? (
                 <Redirect to="/login" />
               ) : (
-                <Dashboard
-                  changePage={(name) => setToolbarName(name)}
-                  user={props.user}
-                />
+                <div>
+                  {!props.user ? (
+                    <CircularProgress />
+                  ) : (
+                    <Dashboard
+                      changePage={(name) => setToolbarName(name)}
+                      user={props.user}
+                    />
+                  )}
+                </div>
               )}
             </Route>
             <Route path="/cves">
@@ -238,10 +246,16 @@ function Application(props) {
               {props.isLoggedIn === false ? (
                 <Redirect to="/login" />
               ) : (
-                <Report
-                  changePage={(name) => setToolbarName(name)}
-                  user={props.user}
-                />
+                <div>
+                  {!props.user ? (
+                    <CircularProgress />
+                  ) : (
+                    <Report
+                      changePage={(name) => setToolbarName(name)}
+                      user={props.user}
+                    />
+                  )}
+                </div>
               )}
             </Route>
           </Switch>

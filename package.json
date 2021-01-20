@@ -9,6 +9,16 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "@progress/kendo-angular-charts": "^5.1.0",
+    "@progress/kendo-angular-common": "^2.0.0",
+    "@progress/kendo-angular-intl": "^3.1.0",
+    "@progress/kendo-angular-l10n": "^3.0.0",
+    "@progress/kendo-angular-popup": "^4.0.0",
+    "@progress/kendo-drawing": "^1.9.3",
+    "@progress/kendo-licensing": "^1.1.3",
+    "@progress/kendo-react-charts": "^4.3.0",
+    "@progress/kendo-react-intl": "^4.3.0",
+    "@progress/kendo-theme-material": "^3.28.0",
     "@react-firebase/auth": "^0.2.10",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
@@ -18,6 +28,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "firebase": "^8.2.2",
+    "hammerjs": "^2.0.8",
     "material-table": "^1.69.2",
     "mongoose": "^5.11.11",
     "nodemon": "^2.0.7",
@@ -58,5 +69,6 @@
   },
   "engines": {
     "node": "14.x"
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

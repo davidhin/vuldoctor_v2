@@ -1,5 +1,4 @@
 import { Typography } from "@material-ui/core";
-import Box from "@material-ui/core/Box";
 import {
   default as Button,
   default as IconButton,
@@ -125,17 +124,13 @@ const FileUpload = (props) => {
     let header = await createToken(props.user);
     let projectID = short.generate();
     const depCheckURL = `https://depscan-oype6ttuha-an.a.run.app?projectID=${projectID}`;
-    axios.post("/addProject", { projectID: projectID }, header);
+    axios.post("/addProject", { projectID: projectID }, header).then((res) => {
+      props.getProjects();
+    });
     files.map((file) => {
       data.append("file", file);
     });
-    fetch(depCheckURL, {
-      method: "POST",
-      body: data,
-      headers: new Headers({
-        Authorization: header["headers"]["Authorization"],
-      }),
-    }).then((result) => {
+    axios.post(depCheckURL, data, header).then((result) => {
       console.log(result);
     });
   };
@@ -150,9 +145,7 @@ const FileUpload = (props) => {
         <div>
           <div className="primaryBox">
             <Typography variant="h5" component="h5" color="black">
-              <Box fontWeight="fontWeightBold" m={1}>
-                Upload File
-              </Box>
+              Upload File
             </Typography>
             <br />
             <div className="center">
