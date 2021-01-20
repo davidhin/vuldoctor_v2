@@ -9,6 +9,7 @@ var router = express.Router();
 
 router.route("/search/cve").get(cveCtrl.getCVEs);
 router.route("/search/cpe").get(cpeCtrl.getCPEs);
+router.route("/getCVEList").post(cveCtrl.getCVEList);
 router.route("/ping").get(testCtrl.getPing);
 router.route("/ping").post(testCtrl.postPing);
 router.route("/gh").post(ghCtrl.postGHtoken);

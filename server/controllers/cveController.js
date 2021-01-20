@@ -17,4 +17,11 @@ module.exports = {
 
     return res.json(cves.map((cve) => cve.toJSON()));
   },
+  getCVEList: async function (req, res) {
+    let search = req.body.map((x) => sanitize(x));
+    const cves = await cve_db.find({
+      cve_id: { $in: search },
+    });
+    return res.json(cves.map((cve) => cve.toJSON()));
+  },
 };

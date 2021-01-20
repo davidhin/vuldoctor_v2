@@ -29,6 +29,7 @@ const Report = (props) => {
   const [bom, setBom] = useState(null);
   const [deps, setDeps] = useState(null);
   const [scan, setScan] = useState(null);
+  const [cveData, setCveData] = useState(props.scan);
 
   useEffect(() => {
     changePage("Report");
@@ -38,6 +39,9 @@ const Report = (props) => {
       setBom(res["data"]["bom"]);
       setDeps(res["data"]["deps"]);
       setScan(res["data"]["scan"]);
+      let cve_ids = res["data"]["scan"].map((a) => a.id);
+      const cveinfo = await axios.post(`/getCVEList`, cve_ids, header);
+      setCveData(cveinfo["data"]);
       setLoading(false);
     };
     getReportData();
@@ -53,7 +57,14 @@ const Report = (props) => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <CVSSPlot scan={deps} />
+                <Grid container spacing={2}>
+                  <Grid item xs={12} lg={6}>
+                    <CVSSPlot scan={scan} cveData={cveData} />
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <CVSSPlot scan={scan} cveData={cveData} />
+                  </Grid>
+                </Grid>
               </Paper>
             </Grid>
           </Grid>
