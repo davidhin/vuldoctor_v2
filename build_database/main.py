@@ -232,6 +232,7 @@ def cveDictParse(cve_dict):
     ]
     return np.array(cve_list), cpe_dict, np.array(cvecpe_list)
 
+
 # %% Download Data
 nvdFeed()
 
