@@ -12,7 +12,6 @@ import "@progress/kendo-theme-material/dist/all.css";
 import React, { useEffect, useState } from "react";
 
 const CVSSPlot = (props) => {
-  const [scan, setScan] = useState(props.scan);
   const [cveData, setCveData] = useState(props.cveData);
   const [plotData, setPlotData] = useState(null);
 
@@ -102,7 +101,6 @@ const CVSSPlot = (props) => {
   );
 
   useEffect(() => {
-    setScan(props.scan);
     setCveData(props.cveData);
     // Calculate CVE values
     let cvss_vals = {};
@@ -123,7 +121,7 @@ const CVSSPlot = (props) => {
     <div>
       {plotData ? (
         <Chart>
-          <ChartTitle text="CVSS Overview" />
+          <ChartTitle text="CVSS Breakdown" />
           <ChartLegend visible={false} />
           <ChartTooltip render={defaultTooltipRender} />
           <ChartCategoryAxis>

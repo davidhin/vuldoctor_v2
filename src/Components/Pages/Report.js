@@ -6,6 +6,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { createToken } from "../Authentication";
+import CVSSBoxPlot from "../Report/CVSSBoxPlot";
 import CVSSPlot from "../Report/CVSSPlot";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +63,7 @@ const Report = (props) => {
                     <CVSSPlot scan={scan} cveData={cveData} />
                   </Grid>
                   <Grid item xs={12} lg={6}>
-                    <CVSSPlot scan={scan} cveData={cveData} />
+                    <CVSSBoxPlot scan={scan} cveData={cveData} />
                   </Grid>
                 </Grid>
               </Paper>
