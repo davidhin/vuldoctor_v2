@@ -27,35 +27,35 @@ const CVSSPlot = (props) => {
   ];
 
   const colours = {
-    "NETWORK:attackVector": "#ff1744",
-    "ADJACENT_NETWORK:attackVector": "#ff9100",
-    "LOCAL:attackVector": "#ffea00",
-    "PHYSICAL:attackVector": "#b0bec5",
+    "NETWORK:attackVector": "#f44336",
+    "ADJACENT_NETWORK:attackVector": "#f44336",
+    "LOCAL:attackVector": "#e57373",
+    "PHYSICAL:attackVector": "#ffcdd2",
 
-    "LOW:attackComplexity": "#ff1744",
-    "HIGH:attackComplexity": "#ff9100",
+    "LOW:attackComplexity": "#f44336",
+    "HIGH:attackComplexity": "#ffcdd2",
 
-    "NONE:privilegeRequired": "#ff1744",
-    "LOW:privilegeRequired": "#ffea00",
-    "HIGH:privilegeRequired": "#b0bec5",
+    "NONE:privilegeRequired": "#f44336",
+    "LOW:privilegeRequired": "#e57373",
+    "HIGH:privilegeRequired": "#ffcdd2",
 
-    "NONE:userInteraction": "#ff1744",
-    "REQUIRED:userInteraction": "#ff9100",
+    "NONE:userInteraction": "#f44336",
+    "REQUIRED:userInteraction": "#ffcdd2",
 
-    "CHANGED:scope": "#ff9100",
-    "UNCHANGED:scope": "#ff9100",
+    "CHANGED:scope": "#f44336",
+    "UNCHANGED:scope": "#f44336",
 
-    "HIGH:availabilityImpact": "#ff1744",
-    "LOW:availabilityImpact": "#ffea00",
-    "NONE:availabilityImpact": "#b0bec5",
+    "HIGH:availabilityImpact": "#f44336",
+    "LOW:availabilityImpact": "#e57373",
+    "NONE:availabilityImpact": "#ffcdd2",
 
-    "HIGH:confidentialityImpact": "#ff1744",
-    "LOW:confidentialityImpact": "#ffea00",
-    "NONE:confidentialityImpact": "#b0bec5",
+    "HIGH:confidentialityImpact": "#f44336",
+    "LOW:confidentialityImpact": "#e57373",
+    "NONE:confidentialityImpact": "#ffcdd2",
 
-    "HIGH:integrityImpact": "#ff1744",
-    "LOW:integrityImpact": "#ffea00",
-    "NONE:integrityImpact": "#b0bec5",
+    "HIGH:integrityImpact": "#f44336",
+    "LOW:integrityImpact": "#e57373",
+    "NONE:integrityImpact": "#ffcdd2",
   };
 
   const scores = {
@@ -111,7 +111,7 @@ const CVSSPlot = (props) => {
     });
     categories.forEach((cat, idx) => {
       cveData.forEach((cve) => {
-        cvss_vals[cve[cat] + ":" + cat][idx] += scores[cve[cat] + ":" + cat];
+        cvss_vals[cve[cat] + ":" + cat][idx] += 1;
       });
     });
     setPlotData(cvss_vals);
