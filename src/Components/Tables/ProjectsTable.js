@@ -19,7 +19,6 @@ const ProjectsTable = (props) => {
       <MaterialTable
         icons={TABLEICONS}
         columns={[
-          { title: "Project ID", field: "pid", editable: "never" },
           { title: "Project Name", field: "name", editable: "onUpdate" },
           { title: "Status", field: "status", editable: "never" },
         ]}
