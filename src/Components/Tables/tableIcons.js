@@ -11,10 +11,12 @@ import Edit from "@material-ui/icons/Edit";
 import FilterList from "@material-ui/icons/FilterList";
 import FirstPage from "@material-ui/icons/FirstPage";
 import LastPage from "@material-ui/icons/LastPage";
+import LoopSharpIcon from "@material-ui/icons/LoopSharp";
 import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
+import ViewCompactIcon from "@material-ui/icons/ViewCompact";
 import React, { forwardRef } from "react";
 
 export const TABLEICONS = {
@@ -39,4 +41,8 @@ export const TABLEICONS = {
   SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+  ViewProject: forwardRef((props, ref) => (
+    <ViewCompactIcon {...props} ref={ref} />
+  )),
+  Reload: forwardRef((props, ref) => <LoopSharpIcon {...props} ref={ref} />),
 };
