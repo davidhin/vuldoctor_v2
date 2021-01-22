@@ -37,17 +37,15 @@ const ProjectsTable = (props) => {
             setData([...dataUpdate]);
             await axios.put("/updateProjectName", newData, props.auth_header);
           },
-          onRowDelete: (oldData) =>
-            new Promise((resolve, reject) => {
-              setTimeout(() => {
-                const dataDelete = [...data];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                setData([...dataDelete]);
-
-                resolve();
-              }, 1000);
-            }),
+          onRowDelete: async (oldData) => {
+            const dataDelete = [...data];
+            dataDelete.splice(oldData.tableData.id, 1);
+            setData([...dataDelete]);
+            await axios.delete("/deleteProject", {
+              data: oldData,
+              headers: props.auth_header["headers"],
+            });
+          },
         }}
         actions={[
           (rowData) => ({

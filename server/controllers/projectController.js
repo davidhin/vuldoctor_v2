@@ -1,4 +1,4 @@
-const downloadStr = require("../gcs");
+const { downloadStr, deleteFolder } = require("../gcs");
 const Project = require("../models/project");
 const sanitize = require("mongo-sanitize");
 
@@ -26,6 +26,21 @@ module.exports = {
       );
       depsfile = JSON.parse(depsfile);
       return res.json({ bom: bomfile, scan: scanfile, deps: depsfile });
+    }
+    return res.status(403).send("Not authorized");
+  },
+
+  deleteProject: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      await deleteFolder(`${auth.user_id}/${req.body.pid}/`);
+      await Project.updateOne(
+        { uid: auth.user_id },
+        {
+          $pull: { projects: { pid: req.body.pid } },
+        }
+      );
+      return res.status(200).send("Deleted project");
     }
     return res.status(403).send("Not authorized");
   },
