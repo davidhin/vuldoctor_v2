@@ -69,7 +69,17 @@ const Report = (props) => {
     changePage("Report");
     const getReportData = async () => {
       const header = await createToken(user);
-      const res = await axios.get(`/getreport/${projectid}`, header);
+      let retrieved = true;
+      const res = await axios
+        .get(`/getreport/${projectid}`, header)
+        .catch(() => {
+          setLoading(1);
+          retrieved = false;
+        });
+      if (!retrieved) {
+        return;
+      }
+
       setBom(res["data"]["bom"]);
       setScan(res["data"]["scan"]);
 
@@ -122,7 +132,13 @@ const Report = (props) => {
   return (
     <div>
       {loading ? (
-        <CircularProgress />
+        <div>
+          {loading === true ? (
+            <CircularProgress />
+          ) : (
+            "Error! Project cannot be retrieved."
+          )}
+        </div>
       ) : (
         <div>
           <Grid container spacing={2}>

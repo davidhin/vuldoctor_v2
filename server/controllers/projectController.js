@@ -5,29 +5,33 @@ const sanitize = require("mongo-sanitize");
 module.exports = {
   getReport: async function (req, res) {
     const auth = req.currentUser;
-    if (auth) {
-      let bomfile = await downloadStr(
-        `${auth.user_id}/${req.params.projectid}/bom.json`
-      );
-      bomfile = JSON.parse(bomfile);
-      let scanfile = await downloadStr(
-        `${auth.user_id}/${req.params.projectid}/depscan.json`
-      );
-      scanfile = JSON.parse(
-        "[" +
-          scanfile
-            .toString("utf-8")
-            .replace(/}/g, "},")
-            .replace(/,([^,]*)$/, "$1") +
-          "]"
-      );
-      let depsfile = await downloadStr(
-        `${auth.user_id}/${req.params.projectid}/extracted_deps.json`
-      );
-      depsfile = JSON.parse(depsfile);
-      return res.json({ bom: bomfile, scan: scanfile, deps: depsfile });
+    try {
+      if (auth) {
+        let bomfile = await downloadStr(
+          `${auth.user_id}/${req.params.projectid}/bom.json`
+        );
+        bomfile = JSON.parse(bomfile);
+        let scanfile = await downloadStr(
+          `${auth.user_id}/${req.params.projectid}/depscan.json`
+        );
+        scanfile = JSON.parse(
+          "[" +
+            scanfile
+              .toString("utf-8")
+              .replace(/}/g, "},")
+              .replace(/,([^,]*)$/, "$1") +
+            "]"
+        );
+        let depsfile = await downloadStr(
+          `${auth.user_id}/${req.params.projectid}/extracted_deps.json`
+        );
+        depsfile = JSON.parse(depsfile);
+        return res.json({ bom: bomfile, scan: scanfile, deps: depsfile });
+      }
+      return res.status(403).send("Not authorized");
+    } catch {
+      return res.status(400).send("Error in retrieving project.");
     }
-    return res.status(403).send("Not authorized");
   },
 
   deleteProject: async function (req, res) {
