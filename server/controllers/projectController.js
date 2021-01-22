@@ -80,7 +80,15 @@ module.exports = {
       let projectID = req.body.projectID;
       Project.updateOne(
         { uid: auth.user_id },
-        { $push: { projects: { pid: projectID, name: "" } } },
+        {
+          $push: {
+            projects: {
+              pid: projectID,
+              name: projectID,
+              date: new Date().toLocaleString(),
+            },
+          },
+        },
         { upsert: true },
         (err, results) => {
           if (err) throw err;
