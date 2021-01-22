@@ -17,5 +17,6 @@ router.route("/gh").get(ghCtrl.getGHtoken);
 router.route("/getreport/:projectid").get(projectCtrl.getReport);
 router.route("/addProject").post(projectCtrl.addProject);
 router.route("/getProjects").get(projectCtrl.getProjects);
+router.route("/updateProjectName").put(projectCtrl.updateProjectName);
 
 module.exports = router;

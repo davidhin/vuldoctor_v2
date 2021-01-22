@@ -1,3 +1,4 @@
+import axios from "axios";
 import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -5,11 +6,13 @@ import { TABLEICONS } from "./tableIcons";
 
 const ProjectsTable = (props) => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const history = useHistory();
 
   useEffect(() => {
     setData(props.projects);
-  }, [props.projects]);
+    setLoading(props.loading);
+  }, [props.projects, props.loading]);
 
   return (
     <div style={{ maxWidth: "100%" }}>
@@ -26,17 +29,15 @@ const ProjectsTable = (props) => {
           pageSize: 10,
           pageSizeOptions: [10, 20, 50],
         }}
-        isLoading={props.loading}
+        isLoading={loading}
         editable={{
-          isDeletable: (rowData) => rowData.status == "Complete",
-          onRowUpdate: (newData, oldData) =>
-            new Promise((resolve, reject) => {
-              const dataUpdate = [...data];
-              const index = oldData.tableData.id;
-              dataUpdate[index] = newData;
-              setData([...dataUpdate]);
-              resolve();
-            }),
+          isDeletable: (rowData) => rowData.status === "Complete",
+          onRowUpdate: async (newData, oldData) => {
+            const dataUpdate = [...data];
+            dataUpdate[oldData.tableData.id] = newData;
+            setData([...dataUpdate]);
+            await axios.put("/updateProjectName", newData, props.auth_header);
+          },
           onRowDelete: (oldData) =>
             new Promise((resolve, reject) => {
               setTimeout(() => {
@@ -54,13 +55,13 @@ const ProjectsTable = (props) => {
             icon: TABLEICONS.ViewProject,
             tooltip: "View Project",
             onClick: (event, row) => history.push(`/report/${row.pid}`),
-            disabled: rowData.status != "Complete",
+            disabled: rowData.status !== "Complete",
           }),
           (rowData) => ({
             icon: TABLEICONS.Reload,
             tooltip: "Reload Report",
             onClick: (event, rowData) => console.log(rowData),
-            disabled: rowData.status != "Complete",
+            disabled: rowData.status !== "Complete",
           }),
         ]}
       />

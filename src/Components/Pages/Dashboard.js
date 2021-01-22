@@ -27,6 +27,7 @@ function Dashboard(props) {
   const [projects, setProjects] = useState([]);
   const [processing, setProcessing] = useState(null);
   const [loadProjects, setLoadProjects] = useState(true);
+  const [authHeader, setAuthHeader] = useState(null);
 
   const getProjects = async () => {
     setLoadProjects(true);
@@ -59,6 +60,7 @@ function Dashboard(props) {
       if (d) {
         setProcessing(d.val() ? d.val() : null);
         const header = await createToken(props.user);
+        setAuthHeader(header);
         setProjProc(d, header);
       }
     });
@@ -95,6 +97,7 @@ function Dashboard(props) {
               projects={projects}
               getProjects={getProjects}
               loading={loadProjects}
+              auth_header={authHeader}
             />
           </Paper>
         </Grid>

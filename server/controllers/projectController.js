@@ -1,5 +1,6 @@
 const downloadStr = require("../gcs");
 const Project = require("../models/project");
+const sanitize = require("mongo-sanitize");
 
 module.exports = {
   getReport: async function (req, res) {
@@ -25,6 +26,22 @@ module.exports = {
       );
       depsfile = JSON.parse(depsfile);
       return res.json({ bom: bomfile, scan: scanfile, deps: depsfile });
+    }
+    return res.status(403).send("Not authorized");
+  },
+
+  updateProjectName: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      let new_name = sanitize(req.body.name);
+      let update = await Project.updateOne(
+        { uid: auth.user_id, projects: { $elemMatch: { pid: req.body.pid } } },
+        {
+          $set: { ["projects.$.name"]: new_name },
+        }
+      );
+      console.log(update);
+      return res.status(200).send("Updated Project Name");
     }
     return res.status(403).send("Not authorized");
   },
