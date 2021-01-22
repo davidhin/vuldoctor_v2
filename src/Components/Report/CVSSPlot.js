@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 
 const CVSSPlot = (props) => {
   const [cveData, setCveData] = useState(props.cveData);
-  const [plotData, setPlotData] = useState(null);
+  const [plotData, setPlotData] = useState([]);
 
   const categories = [
     "attackVector",
@@ -103,18 +103,20 @@ const CVSSPlot = (props) => {
   useEffect(() => {
     setCveData(props.cveData);
     // Calculate CVE values
-    let cvss_vals = {};
-    cveData.forEach((cve) => {
-      categories.forEach((cat) => {
-        cvss_vals[cve[cat] + ":" + cat] = new Array(8).fill(0);
-      });
-    });
-    categories.forEach((cat, idx) => {
+    if (props.cveData) {
+      let cvss_vals = {};
       cveData.forEach((cve) => {
-        cvss_vals[cve[cat] + ":" + cat][idx] += 1;
+        categories.forEach((cat) => {
+          cvss_vals[cve[cat] + ":" + cat] = new Array(8).fill(0);
+        });
       });
-    });
-    setPlotData(cvss_vals);
+      categories.forEach((cat, idx) => {
+        cveData.forEach((cve) => {
+          cvss_vals[cve[cat] + ":" + cat][idx] += 1;
+        });
+      });
+      setPlotData(cvss_vals);
+    }
   }, [props.scan, props.cveData]);
 
   const ChartContainer = () => (

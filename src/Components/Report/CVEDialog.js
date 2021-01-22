@@ -56,17 +56,21 @@ export default function ScrollDialog(props) {
             tabIndex={-1}
           >
             <ReactMarkdown>
-              {props.cve_description.replace("###", "### ")}
+              {props.cve_description
+                ? props.cve_description.replace("###", "### ")
+                : ""}
             </ReactMarkdown>
 
-            {props.related_urls.map((x) => {
-              return (
-                <div>
-                  <Link href={x}>{x}</Link>
-                  <br />
-                </div>
-              );
-            })}
+            {props.related_urls
+              ? props.related_urls.map((x) => {
+                  return (
+                    <div>
+                      <Link href={x}>{x}</Link>
+                      <br />
+                    </div>
+                  );
+                })
+              : ""}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

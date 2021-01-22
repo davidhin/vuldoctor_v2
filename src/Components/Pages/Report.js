@@ -99,29 +99,33 @@ const Report = (props) => {
       });
       setDeps(rel_deps);
 
-      // Get dependencies to import mappings
-      var fuse = new Fuse(Object.keys(rel_deps), {
-        includeMatches: true,
-        includeScore: true,
-        includeIndices: true,
-        threshold: 0.2,
-      });
-      var result = {};
-      res["data"]["scan"].forEach((x) => {
-        let pname = x["package"].split(":")[1];
-        result[pname] = highlight(fuse.search(pname));
-      });
-      setLibMap(result);
+      if (Object.keys(res["data"]["scan"][0]).length > 0) {
+        // Get dependencies to import mappings
+        var fuse = new Fuse(Object.keys(rel_deps), {
+          includeMatches: true,
+          includeScore: true,
+          includeIndices: true,
+          threshold: 0.2,
+        });
+        var result = {};
+        res["data"]["scan"].forEach((x) => {
+          let pname = x["package"].split(":")[1];
+          result[pname] = highlight(fuse.search(pname));
+        });
+        setLibMap(result);
 
-      // Get CVE Info
-      let cve_ids = res["data"]["scan"].map((a) => a.id);
-      const cveinfo = await axios.post(`/getCVEList`, cve_ids, header);
-      setCveData(cveinfo["data"]);
-      const cwes = {};
-      Object.entries(cveinfo["data"]).forEach((e) => {
-        cwes[e[1]["cve_id"]] = e[1]["problemType"];
-      });
-      setCweMap(cwes);
+        // Get CVE Info
+        let cve_ids = res["data"]["scan"].map((a) => a.id);
+        const cveinfo = await axios.post(`/getCVEList`, cve_ids, header);
+        setCveData(cveinfo["data"]);
+        const cwes = {};
+        Object.entries(cveinfo["data"]).forEach((e) => {
+          cwes[e[1]["cve_id"]] = e[1]["problemType"];
+        });
+        setCweMap(cwes);
+      } else {
+        setScan([]);
+      }
 
       setLoading(false);
     };

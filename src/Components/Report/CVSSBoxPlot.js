@@ -14,19 +14,21 @@ const CVSSBoxPlot = (props) => {
 
   useEffect(() => {
     // Calc Plot Values
-    let base_score = [];
-    let exploit_score = [];
-    let impact_score = [];
-    props.cveData.forEach((cve) => {
-      base_score.push(cve["baseScore"]);
-      exploit_score.push(cve["exploitabilityScore"]);
-      impact_score.push(cve["impactScore"]);
-    });
-    let allData = [];
-    allData.push(calcBoxPlotVals(base_score, "Base Score"));
-    allData.push(calcBoxPlotVals(exploit_score, "Exploit Score"));
-    allData.push(calcBoxPlotVals(impact_score, "Impact Score"));
-    setPlotData(allData);
+    if (props.cveData) {
+      let base_score = [];
+      let exploit_score = [];
+      let impact_score = [];
+      props.cveData.forEach((cve) => {
+        base_score.push(cve["baseScore"]);
+        exploit_score.push(cve["exploitabilityScore"]);
+        impact_score.push(cve["impactScore"]);
+      });
+      let allData = [];
+      allData.push(calcBoxPlotVals(base_score, "Base Score"));
+      allData.push(calcBoxPlotVals(exploit_score, "Exploit Score"));
+      allData.push(calcBoxPlotVals(impact_score, "Impact Score"));
+      setPlotData(allData);
+    }
   }, [props.scan, props.cveData]);
 
   const defaultTooltipRender = ({ point }) => (
