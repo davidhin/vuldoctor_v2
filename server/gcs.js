@@ -17,4 +17,11 @@ const downloadStr = async (filename) => {
   return res.toString("utf-8");
 };
 
-module.exports = downloadStr;
+const deleteFolder = async (folderName) => {
+  await storage
+    .bucket("vuldoctor2")
+    .deleteFiles({ prefix: folderName }, function (err) {});
+  return;
+};
+
+module.exports = { downloadStr, deleteFolder };
