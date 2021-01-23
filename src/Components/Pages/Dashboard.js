@@ -91,15 +91,13 @@ function Dashboard(props) {
           </Paper>
         </Grid>
         <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            <ProjectsTable
-              user={props.user}
-              projects={projects}
-              getProjects={getProjects}
-              loading={loadProjects}
-              auth_header={authHeader}
-            />
-          </Paper>
+          <ProjectsTable
+            user={props.user}
+            projects={projects}
+            getProjects={getProjects}
+            loading={loadProjects}
+            auth_header={authHeader}
+          />
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={6}>
           <Paper className={classes.paper}>
