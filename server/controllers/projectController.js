@@ -85,7 +85,7 @@ module.exports = {
     const auth = req.currentUser;
     if (auth) {
       const projects = await Project.findOne({ uid: auth.user_id });
-      await getProjectStats(auth.user_id, projects["projects"]);
+      getProjectStats(auth.user_id, projects["projects"]);
       return res.json(projects["projects"]);
     }
     return res.status(403).send("Not authorized");

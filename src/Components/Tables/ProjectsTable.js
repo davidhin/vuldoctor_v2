@@ -45,6 +45,7 @@ const ProjectsTable = (props) => {
             const dataDelete = [...data];
             dataDelete.splice(oldData.tableData.id, 1);
             setData([...dataDelete]);
+            props.updateVulns([...dataDelete]);
             await axios.delete("/deleteProject", {
               data: oldData,
               headers: props.auth_header["headers"],
