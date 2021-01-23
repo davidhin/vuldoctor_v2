@@ -1,6 +1,7 @@
 const { downloadStr, deleteFolder } = require("../gcs");
 const Project = require("../models/project");
 const sanitize = require("mongo-sanitize");
+const getProjectStats = require("./updateProjects");
 
 module.exports = {
   getReport: async function (req, res) {
@@ -59,7 +60,6 @@ module.exports = {
           $set: { ["projects.$.name"]: new_name },
         }
       );
-      console.log(update);
       return res.status(200).send("Updated Project Name");
     }
     return res.status(403).send("Not authorized");
@@ -69,6 +69,7 @@ module.exports = {
     const auth = req.currentUser;
     if (auth) {
       const projects = await Project.findOne({ uid: auth.user_id });
+      await getProjectStats(auth.user_id, projects["projects"]);
       return res.json(projects["projects"]);
     }
     return res.status(403).send("Not authorized");
@@ -92,7 +93,6 @@ module.exports = {
         { upsert: true },
         (err, results) => {
           if (err) throw err;
-          console.log(results);
         }
       );
       return res.status(200).send("Added Project!");

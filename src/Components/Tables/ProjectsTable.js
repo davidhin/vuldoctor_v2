@@ -20,6 +20,9 @@ const ProjectsTable = (props) => {
         icons={TABLEICONS}
         columns={[
           { title: "Project Name", field: "name", editable: "onUpdate" },
+          { title: "High severity", field: "high_sev", editable: "never" },
+          { title: "Med severity", field: "med_sev", editable: "never" },
+          { title: "Low severity", field: "low_sev", editable: "never" },
           { title: "Last Checked", field: "date", editable: "never" },
           { title: "Status", field: "status", editable: "never" },
         ]}
