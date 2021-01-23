@@ -27,7 +27,23 @@ module.exports = {
           `${auth.user_id}/${req.params.projectid}/extracted_deps.json`
         );
         depsfile = JSON.parse(depsfile);
-        return res.json({ bom: bomfile, scan: scanfile, deps: depsfile });
+
+        // Get project data
+        let projectData = await Project.findOne(
+          {
+            uid: auth.user_id,
+            projects: { $elemMatch: { pid: req.params.projectid } },
+          },
+          { ["projects.$.pid"]: req.params.projectid }
+        );
+        projectData = projectData["projects"][0];
+
+        return res.json({
+          bom: bomfile,
+          scan: scanfile,
+          deps: depsfile,
+          projdata: projectData,
+        });
       }
       return res.status(403).send("Not authorized");
     } catch {
@@ -96,6 +112,25 @@ module.exports = {
         }
       );
       return res.status(200).send("Added Project!");
+    }
+    return res.status(403).send("Not authorized");
+  },
+
+  updateProjectVulns: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      await Project.updateOne(
+        { uid: auth.user_id, projects: { $elemMatch: { pid: req.body.pid } } },
+        {
+          $set: {
+            ["projects.$.high_sev"]: req.body["HIGH"],
+            ["projects.$.med_sev"]: req.body["MEDIUM"],
+            ["projects.$.low_sev"]: req.body["LOW"],
+            ["projects.$.reqOnly"]: req.body["reqOnly"],
+          },
+        }
+      );
+      return res.status(200).send("Updated Vulns");
     }
     return res.status(403).send("Not authorized");
   },

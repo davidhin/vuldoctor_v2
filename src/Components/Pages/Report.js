@@ -1,7 +1,9 @@
 import CircularProgress from "@material-ui/core/CircularProgress";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
+import Switch from "@material-ui/core/Switch";
 import axios from "axios";
 import Fuse from "fuse.js";
 import React, { useEffect, useState } from "react";
@@ -64,9 +66,25 @@ const Report = (props) => {
   const [cveData, setCveData] = useState(props.scan);
   const [cweMap, setCweMap] = useState({});
   const [libMap, setLibMap] = useState(null);
+  const [reqOnly, setReqOnly] = useState(null);
+  const [vulns, setVulns] = useState({ HIGH: 0, MEDIUM: 0, LOW: 0 });
 
   useEffect(() => {
     changePage("Report");
+    const initiateProject = async () => {
+      const header = await createToken(user);
+      const res = await axios
+        .get(`/getreport/${projectid}`, header)
+        .catch(() => {
+          setLoading(1);
+        });
+      changePage("Report - " + res["data"]["projdata"]["name"]);
+      setReqOnly(res["data"]["projdata"]["reqOnly"]);
+    };
+    initiateProject();
+  }, []);
+
+  useEffect(() => {
     const getReportData = async () => {
       const header = await createToken(user);
       let retrieved = true;
@@ -79,9 +97,37 @@ const Report = (props) => {
       if (!retrieved) {
         return;
       }
-
       setBom(res["data"]["bom"]);
       setScan(res["data"]["scan"]);
+
+      if (reqOnly) {
+        let required_only = [];
+        res["data"]["scan"].forEach((x) => {
+          if (x.package_usage == "required") {
+            required_only.push(x);
+          }
+        });
+        if (required_only.length > 0) {
+          res["data"]["scan"] = required_only;
+          setScan(res["data"]["scan"]);
+        } else {
+          res["data"]["scan"] = [{}];
+          setScan(res["data"]["scan"]);
+        }
+      }
+
+      // Count high/med/low vulnerabilities
+      let v = {};
+      v["HIGH"] = 0;
+      v["MEDIUM"] = 0;
+      v["LOW"] = 0;
+      res["data"]["scan"].forEach((x) => {
+        v[x.severity] += 1;
+      });
+      setVulns(v);
+      v["pid"] = projectid;
+      v["reqOnly"] = reqOnly;
+      await axios.put("/updateProjectVulns", v, header);
 
       // Get dependencies to file mappings
       let rel_deps = {};
@@ -129,12 +175,31 @@ const Report = (props) => {
 
       setLoading(false);
     };
-    getReportData();
+    if (reqOnly != null) {
+      getReportData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reqOnly]);
 
   return (
     <div>
+      <FormControlLabel
+        disabled={loading}
+        control={
+          <Switch
+            checked={reqOnly}
+            onChange={(event) => {
+              setReqOnly(event.target.checked);
+              setLoading(true);
+            }}
+            name="checkedB"
+            color="primary"
+          />
+        }
+        label="Only show directly used dependencies"
+        style={{ marginBottom: "20px" }}
+      />
+
       {loading ? (
         <div>
           {loading === true ? (
@@ -147,12 +212,7 @@ const Report = (props) => {
         <div>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <VulnBoxes
-                scan={scan}
-                cveData={cveData}
-                deps={deps}
-                classes={classes}
-              />
+              <VulnBoxes vulns={vulns} classes={classes} />
             </Grid>
 
             <Grid item xs={12}>

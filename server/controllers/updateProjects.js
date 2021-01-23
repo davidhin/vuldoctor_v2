@@ -34,6 +34,7 @@ const getProjectStats = async (uid, projects) => {
             ["projects.$.high_sev"]: vulns["HIGH"],
             ["projects.$.med_sev"]: vulns["MEDIUM"],
             ["projects.$.low_sev"]: vulns["LOW"],
+            ["projects.$.reqOnly"]: true,
           },
         }
       );
