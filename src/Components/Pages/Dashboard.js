@@ -90,9 +90,12 @@ function Dashboard(props) {
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid item xs={12} sm={9}>
-          <Paper className={classes.paper}>
-            <FileUpload user={props.user} getProjects={getProjects} />
-          </Paper>
+          <FileUpload
+            user={props.user}
+            getProjects={getProjects}
+            loading={loadProjects}
+            processing={processing}
+          />
         </Grid>
         <Grid item xs={12} sm={3} md={3}>
           <Paper className={classes.paper}>
