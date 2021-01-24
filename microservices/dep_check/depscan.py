@@ -85,6 +85,7 @@ def depscan(files, filedir, bucket, uid, projectid):
     # Get project type and upload results
     results_files = glob.glob(filedir + "reports/*")
     if len(results_files) == 0:
+        shutil.rmtree(filedir)
         return None
 
     depscan_file = [i for i in results_files if "depscan" in i]
