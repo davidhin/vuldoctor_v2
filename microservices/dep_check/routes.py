@@ -20,7 +20,11 @@ bucket = gcs.get_bucket("vuldoctor2")
 
 @routes.route("/", methods=["POST"])
 def upload_file():
+    """Perform depscan through web interface file upload.
 
+    Returns:
+        [reponse]: 200 if success, 400/204 if failure
+    """
     # Authenticate User
     try:
         decoded_token = authenticateToken(request)

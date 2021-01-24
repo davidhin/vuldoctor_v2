@@ -54,7 +54,18 @@ def serialise_request_files(request, filedir):
 
 
 def depscan(files, filedir, bucket, uid, projectid):
+    """Run depscan tool on extracted files.
 
+    Args:
+        files ([array]): filenames of saved files
+        filedir ([str]): directory of saved files
+        bucket ([gcs bucket]): Google cloud services bucket
+        uid ([str]): user id (from firebase auth)
+        projectid ([str]): project id (generated on server)
+
+    Returns:
+        [bool]: True if completed, None if error
+    """
     # Extracted import data
     extracted_imports = []
     for file in files:
