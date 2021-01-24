@@ -10,7 +10,17 @@ const ProjectsTable = (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    setData(props.projects);
+    let filter_projects = [];
+    props.projects.forEach((p) => {
+      if (!p.repoid) {
+        filter_projects.push(p);
+      } else {
+        if (p.checked) {
+          filter_projects.push(p);
+        }
+      }
+    });
+    setData(filter_projects);
     setLoading(props.loading);
   }, [props.projects, props.loading]);
 
