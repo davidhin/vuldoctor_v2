@@ -67,13 +67,13 @@ const ProjectsTable = (props) => {
             icon: TABLEICONS.ViewProject,
             tooltip: "View Project",
             onClick: (event, row) => history.push(`/report/${row.pid}`),
-            disabled: rowData.status !== "Complete",
+            disabled: rowData.status !== "Complete" || rowData.date === "Never",
           }),
           (rowData) => ({
             icon: TABLEICONS.Reload,
-            tooltip: "Reload Report",
+            tooltip: "Run Analysis",
             onClick: (event, rowData) => console.log(rowData),
-            disabled: rowData.status !== "Complete",
+            disabled: rowData.status !== "Complete" || !rowData.repoid,
           }),
         ]}
       />
