@@ -73,7 +73,7 @@ const ProjectsTable = (props) => {
             icon: TABLEICONS.Reload,
             tooltip: "Run Analysis",
             onClick: (event, row) => {
-              const depCheckURL = `http://localhost:5001/run_github`;
+              const depCheckURL = `https://depscan-oype6ttuha-an.a.run.app/run_github`;
               setLoading(true);
               axios.post(depCheckURL, row, props.auth_header).then((result) => {
                 console.log(result);
