@@ -7,9 +7,9 @@ from flask import Blueprint, Response, request
 from flask_cors import CORS
 from google.cloud import storage
 
-from depscan import allowed_file, depscan, serialise_request_files
 from fire import authenticateToken, deleteDB, setDB
 from mongoatlas import get_github_token, update_last_checked_date
+from scan import allowed_file, depscan, serialise_request_files
 
 # Registering routes to 'routes' so they can be accessed in other files
 routes = Blueprint("urls", __name__,)
