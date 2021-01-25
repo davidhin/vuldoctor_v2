@@ -72,7 +72,13 @@ const ProjectsTable = (props) => {
           (rowData) => ({
             icon: TABLEICONS.Reload,
             tooltip: "Run Analysis",
-            onClick: (event, rowData) => console.log(rowData),
+            onClick: (event, row) => {
+              const depCheckURL = `http://localhost:5001/run_github`;
+              setLoading(true);
+              axios.post(depCheckURL, row, props.auth_header).then((result) => {
+                console.log(result);
+              });
+            },
             disabled: rowData.status !== "Complete" || !rowData.repoid,
           }),
         ]}
