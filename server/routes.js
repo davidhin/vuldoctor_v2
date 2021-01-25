@@ -16,6 +16,7 @@ router.route("/gh").post(ghCtrl.postGHtoken);
 router.route("/gh").get(ghCtrl.getGHtoken);
 router.route("/getreport/:projectid").get(projectCtrl.getReport);
 router.route("/addProject").post(projectCtrl.addProject);
+router.route("/addGitHubProject").post(projectCtrl.addGitHubProject);
 router.route("/getProjects").get(projectCtrl.getProjects);
 router.route("/updateProjectName").put(projectCtrl.updateProjectName);
 router.route("/updateProjectVulns").put(projectCtrl.updateProjectVulns);

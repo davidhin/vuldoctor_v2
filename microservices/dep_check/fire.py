@@ -7,7 +7,7 @@ firebase_admin.initialize_app(
 
 
 def authenticateToken(request):
-    """Used to authenticate and decode Firebase Auth token
+    """Use to authenticate and decode Firebase Auth token.
 
     Args:
         request ([flask request obj]): Req. with Authorization header
@@ -21,7 +21,7 @@ def authenticateToken(request):
 
 
 def setDB(uid, key):
-    """Used to set projectID state to Loading using Firebase Realtime DB
+    """Use to set projectID state to Loading using Firebase Realtime DB.
 
     Args:
         key ([str]): projectID string
@@ -30,10 +30,9 @@ def setDB(uid, key):
 
 
 def deleteDB(uid, key):
-    """Used to delete projectID from Realtime DB when processing finished
+    """Use to delete projectID from Realtime DB when processing finished.
 
     Args:
         key ([str]): projectID string
     """
     db.reference("/" + uid).child(key).delete()
-

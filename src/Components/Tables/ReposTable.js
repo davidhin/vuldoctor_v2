@@ -7,6 +7,7 @@ import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { createToken } from "../Authentication";
+import RepoCheckbox from "./RepoCheckbox";
 import { TABLEICONS } from "./tableIcons";
 
 const clientID = "3cb850ce6db515368334";
@@ -68,13 +69,20 @@ const ReposTable = (props) => {
         })
           .then((res) => res.json())
           .then(async (res) => {
-            if (res["message"] == "Bad credentials") {
+            if (res["message"] === "Bad credentials") {
               await axios.post("/gh", { ghtoken: null }, header);
               return;
             }
             Object.keys(res).map((k) => {
               if (!res[k]["size"]) res[k]["size"] = 0;
               res[k]["size"] = formatBytes(res[k]["size"] * 1024);
+              res[k]["add"] = (
+                <RepoCheckbox
+                  repo={res[k]}
+                  header={header}
+                  repoProject={props.repoProjects[res[k].id]}
+                />
+              );
             });
             return res;
           });

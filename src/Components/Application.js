@@ -236,10 +236,16 @@ function Application(props) {
               {props.isLoggedIn === false ? (
                 <Redirect to="/login" />
               ) : (
-                <GitHub
-                  changePage={(name) => setToolbarName(name)}
-                  user={props.user}
-                />
+                <div>
+                  {!props.user ? (
+                    <CircularProgress />
+                  ) : (
+                    <GitHub
+                      changePage={(name) => setToolbarName(name)}
+                      user={props.user}
+                    />
+                  )}
+                </div>
               )}
             </Route>
             <Route exact path="/report/:projectid">

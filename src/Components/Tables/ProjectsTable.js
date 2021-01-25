@@ -10,7 +10,17 @@ const ProjectsTable = (props) => {
   const history = useHistory();
 
   useEffect(() => {
-    setData(props.projects);
+    let filter_projects = [];
+    props.projects.forEach((p) => {
+      if (!p.repoid) {
+        filter_projects.push(p);
+      } else {
+        if (p.checked) {
+          filter_projects.push(p);
+        }
+      }
+    });
+    setData(filter_projects);
     setLoading(props.loading);
   }, [props.projects, props.loading]);
 
@@ -57,13 +67,19 @@ const ProjectsTable = (props) => {
             icon: TABLEICONS.ViewProject,
             tooltip: "View Project",
             onClick: (event, row) => history.push(`/report/${row.pid}`),
-            disabled: rowData.status !== "Complete",
+            disabled: rowData.status !== "Complete" || rowData.date === "Never",
           }),
           (rowData) => ({
             icon: TABLEICONS.Reload,
-            tooltip: "Reload Report",
-            onClick: (event, rowData) => console.log(rowData),
-            disabled: rowData.status !== "Complete",
+            tooltip: "Run Analysis",
+            onClick: (event, row) => {
+              const depCheckURL = `https://depscan-oype6ttuha-an.a.run.app/run_github`;
+              setLoading(true);
+              axios.post(depCheckURL, row, props.auth_header).then((result) => {
+                console.log(result);
+              });
+            },
+            disabled: rowData.status !== "Complete" || !rowData.repoid,
           }),
         ]}
       />

@@ -116,6 +116,45 @@ module.exports = {
     return res.status(403).send("Not authorized");
   },
 
+  addGitHubProject: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      Project.updateOne(
+        {
+          uid: auth.user_id,
+          projects: { $elemMatch: { repoid: req.body.repoid } },
+        },
+        {
+          $set: { ["projects.$.checked"]: req.body.checked },
+        },
+        (err, results) => {
+          if (err) throw err;
+          if (results.nModified == 0) {
+            Project.updateOne(
+              { uid: auth.user_id },
+              {
+                $push: {
+                  projects: {
+                    pid: req.body.pid,
+                    name: req.body.reponame,
+                    date: "Never",
+                    repoid: req.body.repoid,
+                    checked: req.body.checked,
+                  },
+                },
+              },
+              (err, results) => {
+                if (err) throw err;
+              }
+            );
+          }
+        }
+      );
+      return res.status(200).send("Added Project!");
+    }
+    return res.status(403).send("Not authorized");
+  },
+
   updateProjectVulns: async function (req, res) {
     const auth = req.currentUser;
     if (auth) {

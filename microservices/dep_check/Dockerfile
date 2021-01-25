@@ -27,6 +27,7 @@ RUN pip install flask-cors
 RUN pip install pytest
 RUN pip install pytest-cov
 RUN pip install firebase-admin
+RUN pip install 'pymongo[srv]'
 
 # Set environment variables
 ENV VDB_HOME=/app/db
