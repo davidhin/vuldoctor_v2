@@ -1,8 +1,8 @@
 import os
 
-from flask import (Blueprint, Flask, flash, redirect, render_template, request,
-                   url_for)
+from flask import Flask
 from flask_cors import CORS
+
 from routes import routes
 
 # :TRICKY Need to import flask_cors to automatically handle all CORS headers
