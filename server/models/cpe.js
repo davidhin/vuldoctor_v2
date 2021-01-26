@@ -6,7 +6,7 @@ const cpeSchema = new mongoose.Schema(
     product: String,
     configs: Object,
   },
-  { collection: "cpe" }
+  { collection: "cve" }
 );
 cpeSchema.set("toJSON", {
   transform: (doc, returnedObject) => {

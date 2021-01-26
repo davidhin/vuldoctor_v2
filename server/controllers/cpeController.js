@@ -8,12 +8,11 @@ module.exports = {
     // Get entries with substring matching
     const cpes = await cpe_db
       .find({
-        $or: [
-          { vendor: { $regex: search, $options: "i" } },
-          { product: { $regex: search, $options: "i" } },
-        ],
+        cpes: {
+          $in: [new RegExp(search, "i")],
+        },
       })
-      .limit(10);
+      .limit(100);
 
     return res.json(cpes.map((cpe) => cpe.toJSON()));
   },
