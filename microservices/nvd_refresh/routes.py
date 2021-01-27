@@ -33,8 +33,9 @@ def nvd_refresh():
         mongo_nvdmeta.insert_one(nvdmeta)
 
     # If not updated since last time
-    if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
-        return "Unchanged"
+    if dbnvdmeta:
+        if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
+            return "Unchanged"
 
     fileDirectory = "downloads/"
 
