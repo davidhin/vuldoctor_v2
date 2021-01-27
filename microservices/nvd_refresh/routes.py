@@ -34,16 +34,20 @@ def nvd_refresh():
     # Matched CVEs in database
     old_cves = nvd.get_cves_mongodb([i["cve_id"] for i in cves], client)
     old_cves = list(old_cves)
-    old_cve_set = set([i["cve_id"] for i in old_cves])
+    old_cve_dict = dict([[i["cve_id"], i["modified"]] for i in old_cves])
 
     # Get added / modified CVEs
     added = []
     modified = []
     for cve in cves:
-        if cve["cve_id"] in old_cve_set:
-            modified.append(cve["cve_id"])
+        if cve["cve_id"] in old_cve_dict:
+            if cve["modified"] != old_cve_dict[cve["cve_id"]]:
+                modified.append(cve["cve_id"])
         else:
             added.append(cve["cve_id"])
+
+    if len(added) + len(modified) == 0:
+        return "No changes!"
 
     # Affected CPEs
     cpes = [i for j in [i["cpes"] for i in cves] for i in j]
@@ -56,7 +60,7 @@ def nvd_refresh():
     shutil.rmtree(fileDirectory)
     os.remove("cve.json")
 
-    return Response(status=200)
+    return "Updated NVD Database"
 
 
 @routes.route("/dropupdate", methods=["GET"])
