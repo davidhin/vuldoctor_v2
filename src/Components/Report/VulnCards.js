@@ -62,6 +62,13 @@ const VulnCards = (props) => {
     return (
       <Grid item container spacing={2}>
         {Object.entries(cards).map((e) => {
+          let depname = e[0].split(":")[1];
+          let importname = null;
+          if (libMap[depname]) {
+            if (libMap[depname].length > 0) {
+              importname = libMap[depname][0].value;
+            }
+          }
           return (
             <Grid item xs={12}>
               <Paper className={classes.paper}>
@@ -167,10 +174,10 @@ const VulnCards = (props) => {
                     <Typography variant="overline" color="textSecondary">
                       IMPORTS IN FILES
                     </Typography>
-                    {libMap[e[0].split(":")[1]] && deps[e[0].split(":")[1]] ? (
+                    {importname ? (
                       <ImportsDialog
-                        matches={libMap[e[0].split(":")[1]]}
-                        deps={deps[e[0].split(":")[1]]}
+                        matches={libMap[depname]}
+                        deps={deps[importname]}
                       />
                     ) : null}
                   </Grid>

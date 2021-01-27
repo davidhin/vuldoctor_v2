@@ -100,10 +100,70 @@ const Report = (props) => {
       setBom(res["data"]["bom"]);
       setScan(res["data"]["scan"]);
 
+      // Get dependencies to file mappings
+      let rel_deps = {};
+      res["data"]["deps"].forEach((x) => {
+        if (x.body.length > 0) {
+          let filename = x["filename"].split("/").slice(2).join("/");
+          x["body"].forEach((y) => {
+            if (y["name"].match("/") === null) {
+              if (y["name"].match(".") !== null) {
+                y["name"].split(".").forEach((yn) => {
+                  if (yn in rel_deps) {
+                    rel_deps[yn].push(filename);
+                  } else {
+                    rel_deps[yn] = [filename];
+                  }
+                });
+              } else {
+                if (y["name"] in rel_deps) {
+                  rel_deps[y["name"]].push(filename);
+                } else {
+                  rel_deps[y["name"]] = [filename];
+                }
+              }
+            }
+          });
+        }
+      });
+      setDeps(rel_deps);
+
+      if (Object.keys(res["data"]["scan"][0]).length > 0) {
+        // Get dependencies to import mappings
+        var fuse = new Fuse(Object.keys(rel_deps), {
+          includeMatches: true,
+          includeScore: true,
+          includeIndices: true,
+          threshold: 0.5,
+          minMatchCharLength: 3,
+        });
+        var result = {};
+        res["data"]["scan"].forEach((x) => {
+          let pname = x["package"].split(":")[1];
+          result[pname] = highlight(fuse.search(pname));
+        });
+        setLibMap(result);
+
+        // Get CVE Info
+        let cve_ids = res["data"]["scan"].map((a) => a.id);
+        const cveinfo = await axios.post(`/getCVEList`, cve_ids, header);
+        setCveData(cveinfo["data"]);
+        const cwes = {};
+        Object.entries(cveinfo["data"]).forEach((e) => {
+          cwes[e[1]["cve_id"]] = e[1]["problemType"];
+        });
+        setCweMap(cwes);
+      } else {
+        setScan([]);
+      }
+
       if (reqOnly) {
         let required_only = [];
         res["data"]["scan"].forEach((x) => {
-          if (x.package_usage == "required") {
+          if (
+            x.package_usage == "required" ||
+            result[x.package.split(":")[1]].length > 0
+          ) {
             required_only.push(x);
           }
         });
@@ -128,50 +188,6 @@ const Report = (props) => {
       v["pid"] = projectid;
       v["reqOnly"] = reqOnly;
       await axios.put("/updateProjectVulns", v, header);
-
-      // Get dependencies to file mappings
-      let rel_deps = {};
-      res["data"]["deps"].forEach((x) => {
-        if (x.body.length > 0) {
-          let filename = x["filename"].split("/").slice(2).join("/");
-          x["body"].forEach((y) => {
-            if (y["name"] in rel_deps) {
-              rel_deps[y["name"]].push(filename);
-            } else {
-              rel_deps[y["name"]] = [filename];
-            }
-          });
-        }
-      });
-      setDeps(rel_deps);
-
-      if (Object.keys(res["data"]["scan"][0]).length > 0) {
-        // Get dependencies to import mappings
-        var fuse = new Fuse(Object.keys(rel_deps), {
-          includeMatches: true,
-          includeScore: true,
-          includeIndices: true,
-          threshold: 0.2,
-        });
-        var result = {};
-        res["data"]["scan"].forEach((x) => {
-          let pname = x["package"].split(":")[1];
-          result[pname] = highlight(fuse.search(pname));
-        });
-        setLibMap(result);
-
-        // Get CVE Info
-        let cve_ids = res["data"]["scan"].map((a) => a.id);
-        const cveinfo = await axios.post(`/getCVEList`, cve_ids, header);
-        setCveData(cveinfo["data"]);
-        const cwes = {};
-        Object.entries(cveinfo["data"]).forEach((e) => {
-          cwes[e[1]["cve_id"]] = e[1]["problemType"];
-        });
-        setCweMap(cwes);
-      } else {
-        setScan([]);
-      }
 
       setLoading(false);
     };
