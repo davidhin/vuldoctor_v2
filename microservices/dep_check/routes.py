@@ -64,7 +64,7 @@ def run_github():
     files = [i for i in files if allowed_file(i)]
 
     # Perform dep scanning
-    depscan_result = depscan(files, filedir, bucket, uid, projectid)
+    depscan_result = depscan(files, filedir, bucket, uid, projectid, client)
 
     if not depscan_result:
         deleteDB(uid, projectid)
@@ -108,7 +108,7 @@ def upload_file():
         return Response(status=204)
 
     # Perform dep scanning
-    depscan_result = depscan(files, filedir, bucket, uid, projectid)
+    depscan_result = depscan(files, filedir, bucket, uid, projectid, client)
 
     if not depscan_result:
         deleteDB(uid, projectid)

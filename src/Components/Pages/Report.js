@@ -183,6 +183,9 @@ const Report = (props) => {
       v["LOW"] = 0;
       res["data"]["scan"].forEach((x) => {
         v[x.severity] += 1;
+        if (x.severity === "CRITICAL") {
+          v["HIGH"] += 1;
+        }
       });
       setVulns(v);
       v["pid"] = projectid;

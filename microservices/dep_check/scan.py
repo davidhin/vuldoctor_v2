@@ -53,7 +53,7 @@ def serialise_request_files(request, filedir):
     return files
 
 
-def depscan(files, filedir, bucket, uid, projectid):
+def depscan(files, filedir, bucket, uid, projectid, client):
     """Run depscan tool on extracted files.
 
     Args:
@@ -106,6 +106,24 @@ def depscan(files, filedir, bucket, uid, projectid):
         blob.upload_from_filename(
             filedir + "reports/depscan-{}.json".format(project_type)
         )
+        # Calculate high/med/low
+        with open(filedir + "reports/depscan-{}.json".format(project_type)) as file:
+            data = file.read()
+            high = data.count('"severity": "HIGH"')
+            high += data.count('"severity": "CRITICAL"')
+            med = data.count('"severity": "MEDIUM"')
+            low = data.count('"severity": "LOW"')
+            client.main.projects.update_one(
+                {"uid": uid, "projects": {"$elemMatch": {"pid": projectid}}},
+                {
+                    "$set": {
+                        "projects.$.high_sev": high,
+                        "projects.$.med_sev": med,
+                        "projects.$.low_sev": low,
+                        "projects.$.reqOnly": False,
+                    }
+                },
+            )
 
     # Remove files from container
     shutil.rmtree(filedir)
