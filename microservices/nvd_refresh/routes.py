@@ -31,7 +31,6 @@ def nvd_refresh():
     dbnvdmeta = mongo_nvdmeta.find_one(sort=[("_id", -1)])
     if not dbnvdmeta:
         mongo_nvdmeta.insert_one(nvdmeta)
-        return "First refresh"
 
     # If not updated since last time
     if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
@@ -65,6 +64,8 @@ def nvd_refresh():
             added.append(cve["cve_id"])
 
     if len(added) + len(modified) == 0:
+        nvdmeta["message"] = "NOCHANGES"
+        mongo_nvdmeta.insert_one(nvdmeta)
         return "No changes!"
 
     # Affected CPEs
@@ -73,6 +74,8 @@ def nvd_refresh():
 
     # Upload to mongodb
     os.system("bash import_update.sh")
+    nvdmeta["message"] = "UPDATEDNVD"
+    mongo_nvdmeta.insert_one(nvdmeta)
 
     # Remove data
     shutil.rmtree(fileDirectory)
