@@ -3,6 +3,7 @@ import os
 import shutil
 
 import pymongo
+import requests
 from flask import Blueprint, Response
 from flask_cors import CORS
 
@@ -19,6 +20,23 @@ client = pymongo.MongoClient(os.getenv("MONGODB_TOKEN"))
 @routes.route("/", methods=["GET"])
 def nvd_refresh():
     """Download NVD data and import to mongodb."""
+    # Get modified metadata from NVD website
+    nvdmeta = requests.get(
+        "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.meta"
+    ).text
+    nvdmeta = dict([i.split(":", 1) for i in nvdmeta.splitlines()])
+
+    # Get database last update metadata
+    mongo_nvdmeta = client.main.nvdmeta
+    dbnvdmeta = mongo_nvdmeta.find_one(sort=[("_id", -1)])
+    if not dbnvdmeta:
+        mongo_nvdmeta.insert_one(nvdmeta)
+        return "First refresh"
+
+    # If not updated since last time
+    if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
+        return "Unchanged"
+
     fileDirectory = "downloads/"
 
     # Download Data
