@@ -40,7 +40,7 @@ def nvdRefresh(fileDirectory):
     """
     Path(fileDirectory).mkdir(parents=True, exist_ok=True)
     filenames = []
-    for r in ["modified", "recent"]:
+    for r in ["modified"]:
         filenames.append(fileDirectory + r)
         myfile = requests.get(
             "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-{}.json.zip".format(r),
