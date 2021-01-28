@@ -1,18 +1,19 @@
 import os
-from glob import glob
-from pathlib import Path
 
 import pymongo
 from flask import Blueprint, Response, request
 from flask_cors import CORS
 from google.cloud import storage
 
-from fire import authenticateToken, deleteDB, setDB
-from mongoatlas import get_github_token, update_last_checked_date
-from scan import allowed_file, depscan, serialise_request_files
+import handlers
+from fire import authenticateToken
+from mongoatlas import get_github_token
 
 # Registering routes to 'routes' so they can be accessed in other files
-routes = Blueprint("urls", __name__,)
+routes = Blueprint(
+    "urls",
+    __name__,
+)
 CORS(routes)
 
 # Create a Cloud Storage client.
@@ -45,37 +46,9 @@ def run_github():
         resp = Response(status=403)
         return resp
 
-    # Set Processing
-    setDB(uid, projectid)
-
-    # Create working directory
-    filedir = "upload/" + uid + "/" + projectid + "/"
-    Path(filedir).mkdir(parents=True, exist_ok=True)
-
-    # Clone GitHub to working directory
-    os.system(
-        "git clone https://{}@github.com/{}.git {}".format(
-            github_token, reponame, filedir
-        )
+    return handlers.analyse_github(
+        uid, projectid, github_token, reponame, bucket, client
     )
-
-    # Get files
-    files = glob(filedir + "**", recursive=True)
-    files = [i for i in files if allowed_file(i)]
-
-    # Perform dep scanning
-    depscan_result = depscan(files, filedir, bucket, uid, projectid, client)
-
-    if not depscan_result:
-        deleteDB(uid, projectid)
-        return Response(status=400)
-
-    # Set mongodb lastcheckeddate
-    update_last_checked_date(uid, projectid, client)
-
-    # Unset processing
-    deleteDB(uid, projectid)
-    return Response(status=200)
 
 
 @routes.route("/", methods=["POST"])
@@ -95,25 +68,4 @@ def upload_file():
         resp = Response(status=403)
         return resp
 
-    # Set Processing
-    setDB(uid, projectid)
-
-    # Create working directory
-    filedir = "upload/" + uid + "/" + projectid + "/"
-    Path(filedir).mkdir(parents=True, exist_ok=True)
-
-    # Serialise files from request
-    files = serialise_request_files(request, filedir)
-    if not files:
-        return Response(status=204)
-
-    # Perform dep scanning
-    depscan_result = depscan(files, filedir, bucket, uid, projectid, client)
-
-    if not depscan_result:
-        deleteDB(uid, projectid)
-        return Response(status=400)
-
-    # Unset processing
-    deleteDB(uid, projectid)
-    return Response(status=200)
+    return handlers.analyse_uploaded_files(uid, projectid, bucket, client)
