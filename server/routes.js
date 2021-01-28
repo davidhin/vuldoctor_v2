@@ -16,6 +16,7 @@ router.route("/addProject").post(projectCtrl.addProject);
 router.route("/addGitHubProject").post(projectCtrl.addGitHubProject);
 router.route("/getProjects").get(projectCtrl.getProjects);
 router.route("/updateProjectName").put(projectCtrl.updateProjectName);
+router.route("/updateProjectAuto").put(projectCtrl.updateProjectAuto);
 router.route("/updateProjectVulns").put(projectCtrl.updateProjectVulns);
 router.route("/deleteProject").delete(projectCtrl.deleteProject);
 

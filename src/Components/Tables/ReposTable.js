@@ -1,9 +1,9 @@
 // https://github.com/mbrn/material-table
+import MaterialTable from "@material-table/core";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Alert from "@material-ui/lab/Alert";
 import axios from "axios";
-import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { createToken } from "../Authentication";
