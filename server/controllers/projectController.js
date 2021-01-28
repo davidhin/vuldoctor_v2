@@ -1,7 +1,6 @@
 const { downloadStr, deleteFolder } = require("../gcs");
 const Project = require("../models/project");
 const sanitize = require("mongo-sanitize");
-const getProjectStats = require("./updateProjects");
 
 module.exports = {
   getReport: async function (req, res) {
@@ -81,11 +80,24 @@ module.exports = {
     return res.status(403).send("Not authorized");
   },
 
+  updateProjectAuto: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      await Project.updateOne(
+        { uid: auth.user_id, projects: { $elemMatch: { pid: req.body.pid } } },
+        {
+          $set: { ["projects.$.autorepo"]: req.body.autorepo },
+        }
+      );
+      return res.status(200).send("Updated Project Auto Check");
+    }
+    return res.status(403).send("Not authorized");
+  },
+
   getProjects: async function (req, res) {
     const auth = req.currentUser;
     if (auth) {
       const projects = await Project.findOne({ uid: auth.user_id });
-      getProjectStats(auth.user_id, projects["projects"]);
       return res.json(projects["projects"]);
     }
     return res.status(403).send("Not authorized");
@@ -140,6 +152,7 @@ module.exports = {
                     date: "Never",
                     repoid: req.body.repoid,
                     checked: req.body.checked,
+                    autorepo: false,
                   },
                 },
               },

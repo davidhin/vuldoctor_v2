@@ -1,10 +1,8 @@
 import base64
-import datetime
 import gzip
 import json
 import re
 import zipfile
-from collections import defaultdict
 from os import listdir
 from os.path import isfile, join
 from pathlib import Path
@@ -13,25 +11,47 @@ import numpy as np
 import requests
 from tqdm import tqdm
 
-# Directory where NVD JSON files will be downloaded to and parsed. Create a
-# folder called "nvd" in the same directory as this file for ease of use.
-fileDirectory = "nvd/"
-Path("nvd").mkdir(parents=True, exist_ok=True)
 
+def nvdFeed(fileDirectory):
+    """Download all NVD data excluding modified and recent.
 
-def nvdFeed():
-    # https: // avleonov.com/2017/10/03/downloading-and-analyzing-nvd-cve-feed/
+    Used for initiliasing database from scratch.
+
+    Args:
+        fileDirectory (str): directory to save data
+    """
+    Path(fileDirectory).mkdir(parents=True, exist_ok=True)
     r = requests.get("https://nvd.nist.gov/vuln/data-feeds#JSON_FEED")
-    for filename in re.findall("nvdcve-1.1-[0-9]*\.json\.zip", r.text):
-        print(filename)
+    filenames = []
+    for filename in re.findall("nvdcve-1.1-[0-9]*\\.json\\.zip", r.text):
+        filenames.append(fileDirectory + filename)
         myfile = requests.get(
             "https://nvd.nist.gov/feeds/json/cve/1.1/" + filename, stream=True
         )
         open(fileDirectory + filename, "wb").write(myfile.content)
+    return filenames
 
 
-# Create empty CPE entry for easy initialisation
+def nvdRefresh(fileDirectory):
+    """Download modified and recent NVD data only.
+
+    Args:
+        fileDirectory (str): directory to save data
+    """
+    Path(fileDirectory).mkdir(parents=True, exist_ok=True)
+    filenames = []
+    for r in ["modified"]:
+        filenames.append(fileDirectory + r)
+        myfile = requests.get(
+            "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-{}.json.zip".format(r),
+            stream=True,
+        )
+        open(fileDirectory + r, "wb").write(myfile.content)
+    return filenames
+
+
 def createCPEEntry():
+    """Create empty CPE entry for easy initialisation."""
     return {
         "part": "",
         "vendor": "",
@@ -49,7 +69,7 @@ def createCPEEntry():
 
 
 def createCVEEntry():
-    # Create empty CVE entry for easy initialisation
+    """Create empty CVE entry for easy initialisation."""
     return {
         "cve_id": "",
         "description": "",
@@ -74,13 +94,20 @@ def createCVEEntry():
 
 
 def json_to_comp_str(jsonobj):
-    """
-        Takes a json object and returns compressed form as string
-    """
+    """Take a json object and returns compressed form as string."""
     return base64.b64encode(gzip.compress(bytes(json.dumps(jsonobj), "utf-8"))).decode()
 
 
 def cveInfo(data, cve):
+    """Extract relevant information from CVE.
+
+    Args:
+        data (dict): Empty CVE entry object created using createCVEEntry
+        cve (dict): CVE Object parsed from NVD JSON
+
+    Returns:
+        dict: Data object with fields filled in using CVE Object
+    """
     data["cve_id"] = cve["CVE_data_meta"]["ID"]
     data["description"] = cve["description"]["description_data"]
     data["description"] = "\n".join([d["value"] for d in data["description"]])
@@ -93,6 +120,15 @@ def cveInfo(data, cve):
 
 
 def impact(data, impact):
+    """Obtain impact metrics, prioritising CVSS3 if available.
+
+    Args:
+        data (dict): Empty CVE entry object created using createCVEEntry
+        impact (dict): Impact Object parsed from NVD JSON
+
+    Returns:
+        dict: Data object with fields filled in using CVE Object
+    """
     if "baseMetricV2" in impact and "baseMetricV3" not in impact:
         data["vector"] = impact["baseMetricV2"]["cvssV2"]["vectorString"]
         data["attackVector"] = impact["baseMetricV2"]["cvssV2"]["accessVector"]
@@ -139,6 +175,15 @@ def impact(data, impact):
 
 
 def ver(data, configurations):
+    """Get affected CPEs given CVE Object.
+
+    Args:
+        data (dict): CVE entry object created using createCVEEntry
+        configurations (dict): Configurations Object parsed from NVD JSON
+
+    Returns:
+        list: List of CPEs relating to the CVE in data
+    """
     # Affected versions
     cpes = []
     for nodes in configurations["nodes"]:
@@ -146,60 +191,28 @@ def ver(data, configurations):
             for child in nodes["children"]:
                 if "cpe_match" in child:
                     for cpe in child["cpe_match"]:
-                        cpes.append(cpeParse(data, cpe["cpe23Uri"]))
+                        cpes.append(cpeParse(cpe["cpe23Uri"]))
         else:
             if "cpe_match" in nodes:
                 for cpe in nodes["cpe_match"]:
-                    cpes.append(cpeParse(data, cpe["cpe23Uri"]))
+                    cpes.append(cpeParse(cpe["cpe23Uri"]))
     return cpes
 
 
 # CPE parse
-def cpeParse(data, cpe):
-
-    # If CPE version 2.3
+def cpeParse(cpe):
+    """Obtain relevant parts of CPE if CPE version 2.3."""
     if cpe.startswith("cpe:2.3"):
         components = cpe.split(":")
         return {"id": components[5], "vendor": components[3], "product": components[4]}
-
-        cpeEntry = createCPEEntry()
-        cpeEntry["cpe"] = cpe
-        cpeEntry["part"] = components[2]
-        cpeEntry["vendor"] = components[3]
-        cpeEntry["product"] = components[4]
-        cpeEntry["version"] = components[5]
-        cpeEntry["update"] = components[6]
-        cpeEntry["edition"] = components[7]
-        cpeEntry["language"] = components[8]
-        cpeEntry["softwareEdition"] = components[9]
-        cpeEntry["targetSoftware"] = components[10]
-        cpeEntry["targetHardware"] = components[11]
-        cpeEntry["other"] = components[12]
-        return cpeEntry
     else:
         print("Not CPE2.3")
         return None
 
 
-def parseJSON():
-    # Parse JSON files
-    files = [f for f in listdir(fileDirectory) if isfile(join(fileDirectory, f))]
-    files.sort()
-    all_cve_items = []
-    for file in tqdm(files):
-        archive = zipfile.ZipFile(join(fileDirectory, file), "r")
-        jsonfile = archive.open(archive.namelist()[0])
-        cve_dict = json.loads(jsonfile.read())
-        jsonfile.close()
-        all_cve_items += cve_dict["CVE_Items"]
-
-    return cveDictParse(all_cve_items)
-
-
 def cveDictParse(cve_dict):
+    """Extract CVEs to be imported into mongodb."""
     cve_list = []
-    cpe_dict = defaultdict(list)
-    cvecpe_list = []
     for cve in tqdm(cve_dict):
         data = createCVEEntry()
 
@@ -209,42 +222,43 @@ def cveDictParse(cve_dict):
         cpe = ver(data, cve["configurations"])
 
         # Dates
-        time = datetime.datetime.strptime(cve["publishedDate"], "%Y-%m-%dT%H:%MZ")
         data["created"] = cve["publishedDate"]
-        time = datetime.datetime.strptime(cve["lastModifiedDate"], "%Y-%m-%dT%H:%MZ")
         data["modified"] = cve["lastModifiedDate"]
         cve_list.append(data)
-        for c in cpe:
-            if c["id"] not in cpe_dict[c["vendor"] + ":" + c["product"]]:
-                cpe_dict[c["vendor"] + ":" + c["product"]] += [c["id"]]
-            cvecpe_list.append(
-                {
-                    "cve": data["cve_id"],
-                    "ver": c["id"],
-                    "vendor": c["vendor"],
-                    "product": c["product"],
-                }
-            )
+        data["cpes"] = [
+            "{}|{}|{}".format(c["vendor"], c["product"], c["id"]) for c in cpe
+        ]
+        data["cpes"] = list(set(data["cpes"]))
 
-    cpe_dict = [
-        {"vendor": i.split(":")[0], "product": i.split(":")[1], "configs": j}
-        for i, j in cpe_dict.items()
-    ]
-    return np.array(cve_list), cpe_dict, np.array(cvecpe_list)
+    return np.array(cve_list)
 
 
-# %% Download Data
-nvdFeed()
+def parseJSON(fileDirectory):
+    """Parse JSON files."""
+    files = [f for f in listdir(fileDirectory) if isfile(join(fileDirectory, f))]
+    files.sort()
+    all_cve_items = []
+    for file in tqdm(files):
+        archive = zipfile.ZipFile(join(fileDirectory, file), "r")
+        jsonfile = archive.open(archive.namelist()[0])
+        cve_dict = json.loads(jsonfile.read())
+        jsonfile.close()
+        all_cve_items += cve_dict["CVE_Items"]
+    return cveDictParse(all_cve_items)
 
-# %% Parse data
-cve_list, cpe_list, cvecpe_list = parseJSON()
 
-# %% Save data
-with open("cve.json", "w", encoding="utf-8") as f:
-    json.dump(cve_list.tolist(), f, ensure_ascii=False, indent=4)
+def get_cves_mongodb(cves, client):
+    """Connect to MongoDB and obtain cves from list of ids.
 
-with open("cpe.json", "w", encoding="utf-8") as f:
-    json.dump(cpe_list, f, ensure_ascii=False, indent=4)
+    Args:
+        cves ([array<str>]): list of cve ids
+        client ([mongodbclient]): mongodb client
 
-with open("cvecpe.json", "w", encoding="utf-8") as f:
-    json.dump(cvecpe_list.tolist(), f, ensure_ascii=False, indent=4)
+    Returns:
+        [array]: CVEs from database
+    """
+    db = client.main.cve
+    return db.find(
+        {"cve_id": {"$in": cves}},
+        {"cve_id": 1, "created": 1, "modified": 1, "cpes": 1, "_id": 0},
+    )

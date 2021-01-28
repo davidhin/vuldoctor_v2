@@ -134,6 +134,7 @@ function Dashboard(props) {
             }}
             loading={loadProjects}
             auth_header={authHeader}
+            setProjProc={setProjProc}
           />
         </Grid>
       </Grid>

@@ -100,45 +100,28 @@ const Report = (props) => {
       setBom(res["data"]["bom"]);
       setScan(res["data"]["scan"]);
 
-      if (reqOnly) {
-        let required_only = [];
-        res["data"]["scan"].forEach((x) => {
-          if (x.package_usage == "required") {
-            required_only.push(x);
-          }
-        });
-        if (required_only.length > 0) {
-          res["data"]["scan"] = required_only;
-          setScan(res["data"]["scan"]);
-        } else {
-          res["data"]["scan"] = [{}];
-          setScan(res["data"]["scan"]);
-        }
-      }
-
-      // Count high/med/low vulnerabilities
-      let v = {};
-      v["HIGH"] = 0;
-      v["MEDIUM"] = 0;
-      v["LOW"] = 0;
-      res["data"]["scan"].forEach((x) => {
-        v[x.severity] += 1;
-      });
-      setVulns(v);
-      v["pid"] = projectid;
-      v["reqOnly"] = reqOnly;
-      await axios.put("/updateProjectVulns", v, header);
-
       // Get dependencies to file mappings
       let rel_deps = {};
       res["data"]["deps"].forEach((x) => {
         if (x.body.length > 0) {
           let filename = x["filename"].split("/").slice(2).join("/");
           x["body"].forEach((y) => {
-            if (y["name"] in rel_deps) {
-              rel_deps[y["name"]].push(filename);
-            } else {
-              rel_deps[y["name"]] = [filename];
+            if (y["name"].match("/") === null) {
+              if (y["name"].match(".") !== null) {
+                y["name"].split(".").forEach((yn) => {
+                  if (yn in rel_deps) {
+                    rel_deps[yn].push(filename);
+                  } else {
+                    rel_deps[yn] = [filename];
+                  }
+                });
+              } else {
+                if (y["name"] in rel_deps) {
+                  rel_deps[y["name"]].push(filename);
+                } else {
+                  rel_deps[y["name"]] = [filename];
+                }
+              }
             }
           });
         }
@@ -151,7 +134,8 @@ const Report = (props) => {
           includeMatches: true,
           includeScore: true,
           includeIndices: true,
-          threshold: 0.2,
+          threshold: 0.5,
+          minMatchCharLength: 3,
         });
         var result = {};
         res["data"]["scan"].forEach((x) => {
@@ -172,6 +156,41 @@ const Report = (props) => {
       } else {
         setScan([]);
       }
+
+      if (reqOnly) {
+        let required_only = [];
+        res["data"]["scan"].forEach((x) => {
+          if (
+            x.package_usage == "required" ||
+            result[x.package.split(":")[1]].length > 0
+          ) {
+            required_only.push(x);
+          }
+        });
+        if (required_only.length > 0) {
+          res["data"]["scan"] = required_only;
+          setScan(res["data"]["scan"]);
+        } else {
+          res["data"]["scan"] = [{}];
+          setScan(res["data"]["scan"]);
+        }
+      }
+
+      // Count high/med/low vulnerabilities
+      let v = {};
+      v["HIGH"] = 0;
+      v["MEDIUM"] = 0;
+      v["LOW"] = 0;
+      res["data"]["scan"].forEach((x) => {
+        v[x.severity] += 1;
+        if (x.severity === "CRITICAL") {
+          v["HIGH"] += 1;
+        }
+      });
+      setVulns(v);
+      v["pid"] = projectid;
+      v["reqOnly"] = reqOnly;
+      await axios.put("/updateProjectVulns", v, header);
 
       setLoading(false);
     };

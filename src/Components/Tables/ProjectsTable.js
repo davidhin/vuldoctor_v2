@@ -1,5 +1,5 @@
+import MaterialTable from "@material-table/core";
 import axios from "axios";
-import MaterialTable from "material-table";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { TABLEICONS } from "./tableIcons";
@@ -29,6 +29,7 @@ const ProjectsTable = (props) => {
       <MaterialTable
         icons={TABLEICONS}
         columns={[
+          { title: "Scheduled Run", field: "autorepo", editable: "never" },
           { title: "Project Name", field: "name", editable: "onUpdate" },
           { title: "High severity", field: "high_sev", editable: "never" },
           { title: "Med severity", field: "med_sev", editable: "never" },
@@ -41,6 +42,7 @@ const ProjectsTable = (props) => {
         options={{
           pageSize: 10,
           pageSizeOptions: [10, 20, 50],
+          padding: "dense",
         }}
         isLoading={loading}
         editable={{
@@ -80,6 +82,27 @@ const ProjectsTable = (props) => {
               });
             },
             disabled: rowData.status !== "Complete" || !rowData.repoid,
+          }),
+          (rowData) => ({
+            icon: TABLEICONS.Lightbulb,
+            tooltip: "Toggle scheduled run",
+            onClick: (event, row) => {
+              setLoading(true);
+              axios
+                .put(
+                  "/updateProjectAuto",
+                  {
+                    pid: row.pid,
+                    repoid: row.repoid,
+                    autorepo: !row.autorepo,
+                  },
+                  props.auth_header
+                )
+                .then(() => {
+                  props.setProjProc({ val: () => null }, props.auth_header);
+                });
+            },
+            disabled: !rowData.repoid,
           }),
         ]}
       />

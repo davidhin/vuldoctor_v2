@@ -8,6 +8,7 @@ import ChevronRight from "@material-ui/icons/ChevronRight";
 import Clear from "@material-ui/icons/Clear";
 import DeleteOutline from "@material-ui/icons/DeleteOutline";
 import Edit from "@material-ui/icons/Edit";
+import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import FilterList from "@material-ui/icons/FilterList";
 import FirstPage from "@material-ui/icons/FirstPage";
 import LastPage from "@material-ui/icons/LastPage";
@@ -45,4 +46,7 @@ export const TABLEICONS = {
     <ViewCompactIcon {...props} ref={ref} />
   )),
   Reload: forwardRef((props, ref) => <LoopSharpIcon {...props} ref={ref} />),
+  Lightbulb: forwardRef((props, ref) => (
+    <EmojiObjectsIcon {...props} ref={ref} />
+  )),
 };

@@ -102,15 +102,6 @@ function Application(props) {
         <ListItem
           button
           className={classes.toolbarButton}
-          key={"Home"}
-          component={Link}
-          to="/"
-        >
-          <ListItemText primary={"Home"} />
-        </ListItem>
-        <ListItem
-          button
-          className={classes.toolbarButton}
           key={"CVEs"}
           component={Link}
           to="/cves"
@@ -134,6 +125,15 @@ function Application(props) {
           to="/github"
         >
           <ListItemText primary={"GitHub"} />
+        </ListItem>
+        <ListItem
+          button
+          className={classes.toolbarButton}
+          key={"Home"}
+          component={Link}
+          to="/"
+        >
+          <ListItemText primary={"Home"} />
         </ListItem>
       </List>
     </div>
