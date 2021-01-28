@@ -33,7 +33,7 @@ module.exports = {
             uid: auth.user_id,
             projects: { $elemMatch: { pid: req.params.projectid } },
           },
-          { ["projects.$.pid"]: req.params.projectid }
+          { ["projects.$"]: 1 }
         );
         projectData = projectData["projects"][0];
 
