@@ -9,8 +9,10 @@ from mongoatlas import update_last_checked_date
 from scan import allowed_file, depscan, serialise_request_files
 
 
-def analyse_github(uid, projectid, github_token, reponame, bucket, client):
-    """Use dep-scan on a GitHub repository
+def analyse_github(
+    uid, projectid, github_token, reponame, bucket, client, notify=False
+):
+    """Use dep-scan on a GitHub repository.
 
     Args:
         uid (str): User ID
@@ -19,6 +21,8 @@ def analyse_github(uid, projectid, github_token, reponame, bucket, client):
         reponame (str): name of repo e.g. username/reponame
         bucket (GCS bucket object): Google Cloud Storage "vuldoctor2" bucket
         client (Mongodb client): Mongodb "vulcluster" client
+        notify (bool): Whether or not to send an email to user if the
+        vulnerability status of the project has changed.
 
     Returns:
         [response]: 200 if success, 400/204 if failure
@@ -42,7 +46,7 @@ def analyse_github(uid, projectid, github_token, reponame, bucket, client):
     files = [i for i in files if allowed_file(i)]
 
     # Perform dep scanning
-    depscan_result = depscan(files, filedir, bucket, uid, projectid, client)
+    depscan_result = depscan(files, filedir, bucket, uid, projectid, client, notify)
 
     if not depscan_result:
         deleteDB(uid, projectid)
