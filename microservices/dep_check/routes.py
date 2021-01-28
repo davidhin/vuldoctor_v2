@@ -69,3 +69,27 @@ def upload_file():
         return resp
 
     return handlers.analyse_uploaded_files(uid, projectid, bucket, client)
+
+
+@routes.route("/auto_repo", methods=["POST"])
+def auto_repo():
+    """Used to automatically perform github scanning given only project id
+
+    SECURITY: MAKE ROUTE AUTHENTICATED
+
+    Returns:
+        [response]: 200 if success, 400/204 if failure
+    """
+    request_data = request.get_json(force=True)
+    projectid = request_data["pid"]
+    project = client.main.projects.find_one(
+        {"projects": {"$elemMatch": {"pid": projectid}}},
+        {"projects.name.$": 1, "uid": 1, "_id": 0},
+    )
+    uid = project["uid"]
+    reponame = project["projects"][0]["name"]
+    github_token = get_github_token(uid, client)
+
+    return handlers.analyse_github(
+        uid, projectid, github_token, reponame, bucket, client
+    )
