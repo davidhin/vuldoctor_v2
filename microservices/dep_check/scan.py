@@ -2,6 +2,7 @@ import glob
 import json
 import os
 import shutil
+from datetime import datetime
 
 from parsers import checkFile
 
@@ -156,12 +157,40 @@ def depscan(files, filedir, bucket, uid, projectid, client, notify):
             )
             if notify:
                 new_vulns = []
-                old_ids = set([get_id(i) for i in old_depscan.splitlines()][1:])
+                # TODO: ARRAY SLICING IS FOR TESTING
+                old_ids = set([get_id(i) for i in old_depscan.splitlines()][2:])
                 for new_vuln in data.splitlines():
                     if get_id(new_vuln) not in old_ids:
                         new_vulns.append(json.loads(new_vuln))
                 if len(new_vulns) > 0:
-                    print(new_vulns)
+                    # Upload to history
+                    nowtime = datetime.now()
+                    date = nowtime.strftime("%d%m%Y")
+                    longtime = nowtime.strftime("%d/%m/%Y, %I:%M:%S %P").replace(
+                        " 0", " "
+                    )
+
+                    client.main.projects.update_one(
+                        {"uid": uid, "projects": {"$elemMatch": {"pid": projectid}}},
+                        {
+                            "$addToSet": {
+                                "projects.$.history": date,
+                            }
+                        },
+                    )
+                    blob = bucket.blob(
+                        uid + "/" + projectid + "/" + "depscan_{}.json".format(date)
+                    )
+                    blob.upload_from_string(
+                        data=json.dumps(
+                            {
+                                "date": longtime,
+                                "vulns": new_vulns,
+                            }
+                        ),
+                        content_type="application/json",
+                    )
+                    # TODO(SEND EMAIL HERE)
 
     # Remove files from container
     shutil.rmtree(filedir)

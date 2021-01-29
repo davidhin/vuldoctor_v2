@@ -47,7 +47,7 @@ def run_github():
         return resp
 
     return handlers.analyse_github(
-        uid, projectid, github_token, reponame, bucket, client
+        uid, projectid, github_token, reponame, bucket, client, True
     )
 
 
@@ -73,7 +73,7 @@ def upload_file():
 
 @routes.route("/auto_repo", methods=["POST"])
 def auto_repo():
-    """Used to automatically perform github scanning given only project id
+    """Use to automatically perform github scanning given only project id.
 
     SECURITY: MAKE ROUTE AUTHENTICATED
 
@@ -91,5 +91,5 @@ def auto_repo():
     github_token = get_github_token(uid, client)
 
     return handlers.analyse_github(
-        uid, projectid, github_token, reponame, bucket, client
+        uid, projectid, github_token, reponame, bucket, client, True
     )
