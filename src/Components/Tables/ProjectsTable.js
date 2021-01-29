@@ -72,6 +72,12 @@ const ProjectsTable = (props) => {
             disabled: rowData.status !== "Complete" || rowData.date === "Never",
           }),
           (rowData) => ({
+            icon: TABLEICONS.History,
+            tooltip: "View History",
+            onClick: (event, row) => history.push(`/history/${row.pid}`),
+            disabled: !rowData.history,
+          }),
+          (rowData) => ({
             icon: TABLEICONS.Reload,
             tooltip: "Run Analysis",
             onClick: (event, row) => {

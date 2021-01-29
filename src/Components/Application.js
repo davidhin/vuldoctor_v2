@@ -18,6 +18,7 @@ import CPEs from "./Pages/CPEs";
 import CVEs from "./Pages/CVEs";
 import Dashboard from "./Pages/Dashboard";
 import GitHub from "./Pages/GitHub";
+import History from "./Pages/History";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Report from "./Pages/Report";
@@ -257,6 +258,22 @@ function Application(props) {
                     <CircularProgress />
                   ) : (
                     <Report
+                      changePage={(name) => setToolbarName(name)}
+                      user={props.user}
+                    />
+                  )}
+                </div>
+              )}
+            </Route>
+            <Route exact path="/history/:projectid">
+              {props.isLoggedIn === false ? (
+                <Redirect to="/login" />
+              ) : (
+                <div>
+                  {!props.user ? (
+                    <CircularProgress />
+                  ) : (
+                    <History
                       changePage={(name) => setToolbarName(name)}
                       user={props.user}
                     />

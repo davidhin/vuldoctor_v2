@@ -50,6 +50,30 @@ module.exports = {
     }
   },
 
+  getHistory: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      let project = await Project.findOne(
+        {
+          uid: auth.user_id,
+          projects: { $elemMatch: { pid: req.params.projectid } },
+        },
+        { ["projects.history.$"]: 1 }
+      );
+      hists = project["projects"][0]["history"];
+      hists = await Promise.all(
+        hists.map(async (h) => {
+          let depfile = await downloadStr(
+            `${auth.user_id}/${req.params.projectid}/depscan_${h}.json`
+          );
+          return JSON.parse(depfile);
+        })
+      );
+      return res.json(hists);
+    }
+    return res.status(403).send("Not authorized");
+  },
+
   deleteProject: async function (req, res) {
     const auth = req.currentUser;
     if (auth) {

@@ -19,5 +19,6 @@ router.route("/updateProjectName").put(projectCtrl.updateProjectName);
 router.route("/updateProjectAuto").put(projectCtrl.updateProjectAuto);
 router.route("/updateProjectVulns").put(projectCtrl.updateProjectVulns);
 router.route("/deleteProject").delete(projectCtrl.deleteProject);
+router.route("/getHistory/:projectid").get(projectCtrl.getHistory);
 
 module.exports = router;
