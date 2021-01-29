@@ -32,7 +32,6 @@ const VulnCards = (props) => {
 
   useEffect(() => {
     setHist(props.hist);
-    console.log(props.hist);
     if (props.hist) {
       let tempcards = groupBy(props.hist, "package");
       setCards(tempcards);
