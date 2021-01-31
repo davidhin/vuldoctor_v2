@@ -107,9 +107,13 @@ def depscan(files, filedir, bucket, uid, projectid, client, notify=False):
 
     # Download old depscan
     if notify:
-        filename = uid + "/" + projectid + "/" + "depscan.json"
-        blob = bucket.get_blob(filename)
-        old_depscan = blob.download_as_string().decode()
+        try:
+            filename = uid + "/" + projectid + "/" + "depscan.json"
+            blob = bucket.get_blob(filename)
+            old_depscan = blob.download_as_string().decode()
+        except Exception as e:
+            print(e)
+            notify = False
 
     # Run dep-scan
     src = filedir
