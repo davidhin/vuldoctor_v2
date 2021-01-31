@@ -127,15 +127,6 @@ function Application(props) {
         >
           <ListItemText primary={"GitHub"} />
         </ListItem>
-        <ListItem
-          button
-          className={classes.toolbarButton}
-          key={"Home"}
-          component={Link}
-          to="/"
-        >
-          <ListItemText primary={"Home"} />
-        </ListItem>
       </List>
     </div>
   );
