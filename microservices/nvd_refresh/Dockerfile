@@ -34,4 +34,4 @@ RUN pip install tqdm
 # For environments with multiple CPU cores, increase the number of workers
 # to be equal to the cores available.
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --timeout 600 app:app
