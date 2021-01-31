@@ -67,6 +67,7 @@ export default function ProfileMenu(props) {
           aria-controls={open ? "menu-list-grow" : undefined}
           aria-haspopup="true"
           onClick={handleToggle}
+          style={{ marginRight: "32px" }}
         >
           <AccountCircleIcon fontSize="large" />
         </IconButton>
@@ -102,6 +103,7 @@ export default function ProfileMenu(props) {
                       </MenuItem>
                     ) : (
                       <div>
+                        <MenuItem disabled={true}>{props.user.email}</MenuItem>
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </div>
                     )}

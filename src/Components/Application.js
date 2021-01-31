@@ -150,7 +150,7 @@ function Application(props) {
           <Typography variant="h6" noWrap style={{ flex: 1 }}>
             {toolbarName}
           </Typography>
-          <ProfileMenu isLoggedIn={props.isLoggedIn} />
+          <ProfileMenu isLoggedIn={props.isLoggedIn} user={props.user} />
         </Toolbar>
       </AppBar>
       <nav className={classes.drawer} aria-label="mailbox folders">
