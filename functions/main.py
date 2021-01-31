@@ -30,7 +30,7 @@ def send_auto_repo_requests(request):
     for p in projects:
         async_request(
             requests.post,
-            "http://localhost:5001/auto_repo",
+            "https://depscan-oype6ttuha-an.a.run.app/auto_repo",
             json={"pid": p},
         )
 
