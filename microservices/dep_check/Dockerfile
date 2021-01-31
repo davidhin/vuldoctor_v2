@@ -40,4 +40,4 @@ ENV GOOGLE_APPLICATION_CREDENTIALS=/app/solidmantra.json
 # For environments with multiple CPU cores, increase the number of workers
 # to be equal to the cores available.
 
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 app:app
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 1 --backlog 10 --timeout 600 app:app

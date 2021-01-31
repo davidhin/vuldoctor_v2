@@ -1,1 +1,1 @@
-mongoimport --uri $MONGODB_TOKEN --collection cve --upsert --upsertFields cve_id --file cve.json --jsonArray
+mongoimport --uri $MONGODB_TOKEN --collection cve --upsert --upsertFields cve_id --batchSize 20 --file cve.json --jsonArray

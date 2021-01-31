@@ -8,41 +8,39 @@ import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import fire from "../../fire.js";
 
-const Login = (props) => {
+const PasswordReset = (props) => {
   const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
   const [error, setError] = useState(null);
+  const [severity, setSeverity] = useState("error");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     fire
       .auth()
-      .signInWithEmailAndPassword(email, password)
+      .sendPasswordResetEmail(email)
+      .then((e) => {
+        setError("A link has been sent to your email.");
+        setSeverity("success");
+      })
       .catch((error) => {
         setError(error.message);
+        setSeverity("error");
       });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       {error !== null && (
-        <Alert severity="error" style={{ marginBottom: "24px" }}>
+        <Alert severity={severity} style={{ marginBottom: "24px" }}>
           {error}
         </Alert>
       )}
-      <Typography variant="h5" style={{ marginBottom: "24px" }}>
-        Login
+      <Typography variant="h5" style={{ marginBottom: "32px" }}>
+        Reset Password
       </Typography>
       <TextField
         onChange={({ target }) => setEmail(target.value)}
         label="Email"
-        fullWidth
-        style={{ marginBottom: "32px" }}
-      />
-      <TextField
-        type="password"
-        onChange={({ target }) => setPassword(target.value)}
-        label="Password"
         fullWidth
         style={{ marginBottom: "48px" }}
       />
@@ -52,28 +50,17 @@ const Login = (props) => {
         color="primary"
         style={{ float: "right" }}
       >
-        Login
+        Send reset link
       </Button>
-      <div style={{ float: "left" }}>
-        <Link
-          component="button"
-          variant="body2"
-          component={RouterLink}
-          to="/signup"
-        >
-          Create Account
-        </Link>
-        <br />
-        <Link
-          component="button"
-          variant="body2"
-          component={RouterLink}
-          to="/resetpassword"
-        >
-          Forgot Password
-        </Link>
-      </div>
+      <Link
+        component="button"
+        variant="body2"
+        component={RouterLink}
+        to="/login"
+      >
+        Sign In
+      </Link>
     </form>
   );
 };
-export default Login;
+export default PasswordReset;

@@ -7,18 +7,18 @@ import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import { makeStyles, MuiThemeProvider } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
-import React from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import ProfileMenu from "./Menu";
 import CPEs from "./Pages/CPEs";
 import CVEs from "./Pages/CVEs";
 import Dashboard from "./Pages/Dashboard";
 import GitHub from "./Pages/GitHub";
-import Home from "./Pages/Home";
+import History from "./Pages/History";
 import Login from "./Pages/Login";
 import Report from "./Pages/Report";
 import VDTheme from "./Theme";
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     width: drawerWidth,
-    background: "#282836",
+    background: "#131313",
     boxShadow: "0 0px 20px 4px rgba(0,0,0,0.6)",
   },
   content: {
@@ -75,10 +75,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Application(props) {
-  const { window } = props;
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [toolbarName, setToolbarName] = React.useState("");
+  const [size, setSize] = useState(0);
+  const targetRef = useRef();
+
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize(targetRef.current.offsetWidth - 39);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -126,15 +136,6 @@ function Application(props) {
         >
           <ListItemText primary={"GitHub"} />
         </ListItem>
-        <ListItem
-          button
-          className={classes.toolbarButton}
-          key={"Home"}
-          component={Link}
-          to="/"
-        >
-          <ListItemText primary={"Home"} />
-        </ListItem>
       </List>
     </div>
   );
@@ -143,131 +144,150 @@ function Application(props) {
     window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <MuiThemeProvider theme={VDTheme}>
-      <div className={classes.root}>
-        <CssBaseline />
-        <AppBar position="fixed" elevation={0} className={classes.appBar}>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              className={classes.menuButton}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" noWrap style={{ flex: 1 }}>
-              {toolbarName}
-            </Typography>
-            <ProfileMenu isLoggedIn={props.isLoggedIn} />
-          </Toolbar>
-        </AppBar>
-        <nav className={classes.drawer} aria-label="mailbox folders">
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
-          <Hidden smUp implementation="css">
-            <Drawer
-              container={container}
-              variant="temporary"
-              anchor={VDTheme.direction}
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
-            >
-              {drawer}
-            </Drawer>
-          </Hidden>
-          <Hidden xsDown implementation="css">
-            <Drawer
-              classes={{
-                paper: classes.drawerPaper,
-              }}
-              variant="permanent"
-              open
-            >
-              {drawer}
-            </Drawer>
-          </Hidden>
-        </nav>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Switch>
-            <Route exact path="/">
-              <Home
-                changePage={(name) => setToolbarName(name)}
-                user={props.user}
-              />
-            </Route>
-            <Route path="/dashboard">
-              {props.isLoggedIn === false ? (
-                <Redirect to="/login" />
-              ) : (
-                <div>
-                  {!props.user ? (
-                    <CircularProgress />
-                  ) : (
-                    <Dashboard
-                      changePage={(name) => setToolbarName(name)}
-                      user={props.user}
-                    />
-                  )}
-                </div>
-              )}
-            </Route>
-            <Route path="/cves">
-              <CVEs changePage={(name) => setToolbarName(name)} />
-            </Route>
-            <Route path="/cpes">
-              <CPEs changePage={(name) => setToolbarName(name)} />
-            </Route>
-            <Route exact path="/login">
-              {props.isLoggedIn ? (
-                <Redirect to="/dashboard" />
-              ) : (
-                <Login changePage={(name) => setToolbarName(name)} />
-              )}
-            </Route>
-            <Route exact path="/github">
-              {props.isLoggedIn === false ? (
-                <Redirect to="/login" />
-              ) : (
-                <div>
-                  {!props.user ? (
-                    <CircularProgress />
-                  ) : (
-                    <GitHub
-                      changePage={(name) => setToolbarName(name)}
-                      user={props.user}
-                    />
-                  )}
-                </div>
-              )}
-            </Route>
-            <Route exact path="/report/:projectid">
-              {props.isLoggedIn === false ? (
-                <Redirect to="/login" />
-              ) : (
-                <div>
-                  {!props.user ? (
-                    <CircularProgress />
-                  ) : (
-                    <Report
-                      changePage={(name) => setToolbarName(name)}
-                      user={props.user}
-                    />
-                  )}
-                </div>
-              )}
-            </Route>
-          </Switch>
-        </main>
-      </div>
-    </MuiThemeProvider>
+    <div className={classes.root}>
+      <CssBaseline />
+      <AppBar
+        ref={targetRef}
+        position="fixed"
+        elevation={0}
+        className={classes.appBar}
+      >
+        <Toolbar>
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={handleDrawerToggle}
+            className={classes.menuButton}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap style={{ flex: 1 }}>
+            {toolbarName}
+          </Typography>
+          <ProfileMenu isLoggedIn={props.isLoggedIn} user={props.user} />
+        </Toolbar>
+      </AppBar>
+      <nav className={classes.drawer} aria-label="mailbox folders">
+        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
+        <Hidden smUp implementation="css">
+          <Drawer
+            variant="temporary"
+            anchor={VDTheme.direction}
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+        <Hidden xsDown implementation="css">
+          <Drawer
+            classes={{
+              paper: classes.drawerPaper,
+            }}
+            variant="permanent"
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Hidden>
+      </nav>
+      <main className={classes.content}>
+        <div className={classes.toolbar} />
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/dashboard" />
+          </Route>
+          <Route path="/dashboard">
+            {props.isLoggedIn === false ? (
+              <Redirect to="/login" />
+            ) : (
+              <div>
+                {!props.user ? (
+                  <CircularProgress />
+                ) : (
+                  <Dashboard
+                    changePage={(name) => setToolbarName(name)}
+                    user={props.user}
+                    maxWidth={size}
+                  />
+                )}
+              </div>
+            )}
+          </Route>
+          <Route path="/cves">
+            <CVEs changePage={(name) => setToolbarName(name)} />
+          </Route>
+          <Route path="/cpes">
+            <CPEs changePage={(name) => setToolbarName(name)} />
+          </Route>
+          <Route exact path="/login">
+            {props.isLoggedIn ? (
+              <Redirect to="/dashboard" />
+            ) : (
+              <Login changePage={(name) => setToolbarName(name)} />
+            )}
+          </Route>
+          <Route exact path="/github">
+            {props.isLoggedIn === false ? (
+              <Redirect to="/login" />
+            ) : (
+              <div>
+                {!props.user ? (
+                  <CircularProgress />
+                ) : (
+                  <GitHub
+                    changePage={(name) => setToolbarName(name)}
+                    user={props.user}
+                  />
+                )}
+              </div>
+            )}
+          </Route>
+          <Route exact path="/report/:projectid">
+            {props.isLoggedIn === false ? (
+              <Redirect to="/login" />
+            ) : (
+              <div>
+                {!props.user ? (
+                  <CircularProgress />
+                ) : (
+                  <Report
+                    changePage={(name) => setToolbarName(name)}
+                    user={props.user}
+                  />
+                )}
+              </div>
+            )}
+          </Route>
+          <Route exact path="/history/:projectid">
+            {props.isLoggedIn === false ? (
+              <Redirect to="/login" />
+            ) : (
+              <div>
+                {!props.user ? (
+                  <CircularProgress />
+                ) : (
+                  <History
+                    changePage={(name) => setToolbarName(name)}
+                    user={props.user}
+                  />
+                )}
+              </div>
+            )}
+          </Route>
+          <Route exact path="*">
+            <Redirect to="/dashboard" />
+          </Route>
+        </Switch>
+      </main>
+    </div>
   );
 }
 

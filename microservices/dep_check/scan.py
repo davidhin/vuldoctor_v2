@@ -2,6 +2,7 @@ import glob
 import json
 import os
 import shutil
+from datetime import datetime
 
 from parsers import checkFile
 
@@ -53,7 +54,32 @@ def serialise_request_files(request, filedir):
     return files
 
 
-def depscan(files, filedir, bucket, uid, projectid, client):
+def count_vulns(data):
+    """Count number of vulnerabilities in depscan output.
+
+    Args:
+        data (str): String representation of depscan "json" output
+
+    Returns:
+        [high, med, low]: Number of high/med/low severity vulnerabilities
+    """
+    high = data.count('"severity": "HIGH"')
+    high += data.count('"severity": "CRITICAL"')
+    med = data.count('"severity": "MEDIUM"')
+    low = data.count('"severity": "LOW"')
+    return high, med, low
+
+
+def get_id(data):
+    """Use json parsing to get IDs from depscan output.
+
+    Args:
+        data (str): String representation of depscan "json" output
+    """
+    return json.loads(data)["id"]
+
+
+def depscan(files, filedir, bucket, uid, projectid, client, notify=False):
     """Run depscan tool on extracted files.
 
     Args:
@@ -62,6 +88,8 @@ def depscan(files, filedir, bucket, uid, projectid, client):
         bucket ([gcs bucket]): Google cloud services bucket
         uid ([str]): user id (from firebase auth)
         projectid ([str]): project id (generated on server)
+        notify (bool): Whether or not to send an email to user if the
+        vulnerability status of the project has changed.
 
     Returns:
         [bool]: True if completed, None if error
@@ -76,6 +104,16 @@ def depscan(files, filedir, bucket, uid, projectid, client):
     blob.upload_from_string(
         data=json.dumps(extracted_imports), content_type="application/json"
     )
+
+    # Download old depscan
+    if notify:
+        try:
+            filename = uid + "/" + projectid + "/" + "depscan.json"
+            blob = bucket.get_blob(filename)
+            old_depscan = blob.download_as_string().decode()
+        except Exception as e:
+            print(e)
+            notify = False
 
     # Run dep-scan
     src = filedir
@@ -109,10 +147,7 @@ def depscan(files, filedir, bucket, uid, projectid, client):
         # Calculate high/med/low
         with open(filedir + "reports/depscan-{}.json".format(project_type)) as file:
             data = file.read()
-            high = data.count('"severity": "HIGH"')
-            high += data.count('"severity": "CRITICAL"')
-            med = data.count('"severity": "MEDIUM"')
-            low = data.count('"severity": "LOW"')
+            high, med, low = count_vulns(data)
             client.main.projects.update_one(
                 {"uid": uid, "projects": {"$elemMatch": {"pid": projectid}}},
                 {
@@ -124,6 +159,42 @@ def depscan(files, filedir, bucket, uid, projectid, client):
                     }
                 },
             )
+            if notify:
+                new_vulns = []
+                # TODO: ARRAY SLICING IS FOR TESTING
+                old_ids = set([get_id(i) for i in old_depscan.splitlines()][2:])
+                for new_vuln in data.splitlines():
+                    if get_id(new_vuln) not in old_ids:
+                        new_vulns.append(json.loads(new_vuln))
+                if len(new_vulns) > 0:
+                    # Upload to history
+                    nowtime = datetime.now()
+                    date = nowtime.strftime("%d%m%Y")
+                    longtime = nowtime.strftime("%d/%m/%Y, %I:%M:%S %P").replace(
+                        " 0", " "
+                    )
+
+                    client.main.projects.update_one(
+                        {"uid": uid, "projects": {"$elemMatch": {"pid": projectid}}},
+                        {
+                            "$addToSet": {
+                                "projects.$.history": date,
+                            }
+                        },
+                    )
+                    blob = bucket.blob(
+                        uid + "/" + projectid + "/" + "depscan_{}.json".format(date)
+                    )
+                    blob.upload_from_string(
+                        data=json.dumps(
+                            {
+                                "date": longtime,
+                                "vulns": new_vulns,
+                            }
+                        ),
+                        content_type="application/json",
+                    )
+                    # TODO(SEND EMAIL HERE)
 
     # Remove files from container
     shutil.rmtree(filedir)

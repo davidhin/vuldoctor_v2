@@ -11,6 +11,7 @@ import Edit from "@material-ui/icons/Edit";
 import EmojiObjectsIcon from "@material-ui/icons/EmojiObjects";
 import FilterList from "@material-ui/icons/FilterList";
 import FirstPage from "@material-ui/icons/FirstPage";
+import HistoryIcon from "@material-ui/icons/History";
 import LastPage from "@material-ui/icons/LastPage";
 import LoopSharpIcon from "@material-ui/icons/LoopSharp";
 import Remove from "@material-ui/icons/Remove";
@@ -49,4 +50,5 @@ export const TABLEICONS = {
   Lightbulb: forwardRef((props, ref) => (
     <EmojiObjectsIcon {...props} ref={ref} />
   )),
+  History: forwardRef((props, ref) => <HistoryIcon {...props} ref={ref} />),
 };

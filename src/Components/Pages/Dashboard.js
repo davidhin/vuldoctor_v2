@@ -126,16 +126,18 @@ function Dashboard(props) {
         </Grid>
 
         <Grid item xs={12}>
-          <ProjectsTable
-            user={props.user}
-            projects={projects}
-            updateVulns={(vulns) => {
-              updateVulns(vulns);
-            }}
-            loading={loadProjects}
-            auth_header={authHeader}
-            setProjProc={setProjProc}
-          />
+          <div style={{ maxWidth: props.maxWidth }}>
+            <ProjectsTable
+              user={props.user}
+              projects={projects}
+              updateVulns={(vulns) => {
+                updateVulns(vulns);
+              }}
+              loading={loadProjects}
+              auth_header={authHeader}
+              setProjProc={setProjProc}
+            />
+          </div>
         </Grid>
       </Grid>
     </div>

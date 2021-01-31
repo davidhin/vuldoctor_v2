@@ -33,7 +33,7 @@ module.exports = {
             uid: auth.user_id,
             projects: { $elemMatch: { pid: req.params.projectid } },
           },
-          { ["projects.$.pid"]: req.params.projectid }
+          { ["projects.$"]: 1 }
         );
         projectData = projectData["projects"][0];
 
@@ -48,6 +48,30 @@ module.exports = {
     } catch {
       return res.status(400).send("Error in retrieving project.");
     }
+  },
+
+  getHistory: async function (req, res) {
+    const auth = req.currentUser;
+    if (auth) {
+      let project = await Project.findOne(
+        {
+          uid: auth.user_id,
+          projects: { $elemMatch: { pid: req.params.projectid } },
+        },
+        { ["projects.history.$"]: 1 }
+      );
+      hists = project["projects"][0]["history"];
+      hists = await Promise.all(
+        hists.map(async (h) => {
+          let depfile = await downloadStr(
+            `${auth.user_id}/${req.params.projectid}/depscan_${h}.json`
+          );
+          return JSON.parse(depfile);
+        })
+      );
+      return res.json(hists);
+    }
+    return res.status(403).send("Not authorized");
   },
 
   deleteProject: async function (req, res) {
@@ -98,7 +122,7 @@ module.exports = {
     const auth = req.currentUser;
     if (auth) {
       const projects = await Project.findOne({ uid: auth.user_id });
-      return res.json(projects["projects"]);
+      return projects ? res.json(projects["projects"]) : res.json([]);
     }
     return res.status(403).send("Not authorized");
   },
@@ -156,6 +180,7 @@ module.exports = {
                   },
                 },
               },
+              { upsert: true },
               (err, results) => {
                 if (err) throw err;
               }
