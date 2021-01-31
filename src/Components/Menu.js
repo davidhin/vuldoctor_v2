@@ -103,7 +103,11 @@ export default function ProfileMenu(props) {
                       </MenuItem>
                     ) : (
                       <div>
-                        <MenuItem disabled={true}>{props.user.email}</MenuItem>
+                        {!props.user ? null : (
+                          <MenuItem disabled={true}>
+                            {props.user.email}
+                          </MenuItem>
+                        )}
                         <MenuItem onClick={handleLogout}>Logout</MenuItem>
                       </div>
                     )}
