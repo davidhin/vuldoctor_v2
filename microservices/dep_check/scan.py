@@ -79,7 +79,7 @@ def get_id(data):
     return json.loads(data)["id"]
 
 
-def depscan(files, filedir, bucket, uid, projectid, client, notify):
+def depscan(files, filedir, bucket, uid, projectid, client, notify=False):
     """Run depscan tool on extracted files.
 
     Args:
