@@ -34,7 +34,7 @@ const ApplicationLogin = (props) => {
             >
               VulDoctor
             </Typography>
-            {props.user ? (
+            {props.user && !props.user.emailVerified ? (
               <Switch>
                 <Route exact path="/verifyemail">
                   <VerifyEmail user={props.user} />
