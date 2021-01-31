@@ -8,16 +8,21 @@ import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import fire from "../../fire.js";
 
-const Login = (props) => {
+const SignUp = (props) => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [passwordconfirm, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (password != passwordconfirm) {
+      setError("Passwords do not match!");
+      return;
+    }
     fire
       .auth()
-      .signInWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(email, password)
       .catch((error) => {
         setError(error.message);
       });
@@ -30,8 +35,8 @@ const Login = (props) => {
           {error}
         </Alert>
       )}
-      <Typography variant="h5" style={{ marginBottom: "24px" }}>
-        Login
+      <Typography variant="h5" style={{ marginBottom: "32px" }}>
+        Sign Up
       </Typography>
       <TextField
         onChange={({ target }) => setEmail(target.value)}
@@ -44,6 +49,13 @@ const Login = (props) => {
         onChange={({ target }) => setPassword(target.value)}
         label="Password"
         fullWidth
+        style={{ marginBottom: "32px" }}
+      />
+      <TextField
+        type="password"
+        onChange={({ target }) => setConfirmPassword(target.value)}
+        label="Confirm Password"
+        fullWidth
         style={{ marginBottom: "48px" }}
       />
       <Button
@@ -52,28 +64,17 @@ const Login = (props) => {
         color="primary"
         style={{ float: "right" }}
       >
-        Login
+        Sign Up
       </Button>
-      <div style={{ float: "left" }}>
-        <Link
-          component="button"
-          variant="body2"
-          component={RouterLink}
-          to="/signup"
-        >
-          Create Account
-        </Link>
-        <br />
-        <Link
-          component="button"
-          variant="body2"
-          component={RouterLink}
-          to="/resetpassword"
-        >
-          Forgot Password
-        </Link>
-      </div>
+      <Link
+        component="button"
+        variant="body2"
+        component={RouterLink}
+        to="/login"
+      >
+        Sign In
+      </Link>
     </form>
   );
 };
-export default Login;
+export default SignUp;
