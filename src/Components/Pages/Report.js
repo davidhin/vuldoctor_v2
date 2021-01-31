@@ -249,7 +249,6 @@ const Report = (props) => {
 
             <VulnCards
               cweMap={cweMap}
-              bom={bom}
               scan={scan}
               cveData={cveData}
               deps={deps}

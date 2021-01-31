@@ -24,9 +24,9 @@ const VulnCards = (props) => {
   const [scan, setScan] = useState(props.scan);
   const [cveData, setCveData] = useState(props.cveData);
   const [deps, setDeps] = useState(props.deps);
-  const [bom, setBom] = useState(props.bom);
   const [cweMap, setCweMap] = useState({});
   const [libMap, setLibMap] = useState({});
+  const [cards, setCards] = useState([]);
 
   var groupBy = function (xs, key) {
     return xs.reduce(function (rv, x) {
@@ -39,17 +39,21 @@ const VulnCards = (props) => {
     setScan(props.scan);
     setCveData(props.cveData);
     setDeps(props.deps);
-    setBom(props.bom);
     setCweMap(props.cweMap);
     setLibMap(props.libMap);
-  }, [
-    props.scan,
-    props.cveData,
-    props.deps,
-    props.bom,
-    props.cweMap,
-    props.libMap,
-  ]);
+    let cards = groupBy(scan, "package");
+    cards = Object.entries(cards);
+    cards = cards.map((c) => {
+      let tempcard = c;
+      tempcard["totalscore"] = 0;
+      c[1].forEach((cve) => {
+        tempcard["totalscore"] += parseFloat(cve.cvss_score);
+      });
+      return c;
+    });
+    cards = cards.sort((a, b) => b.totalscore - a.totalscore);
+    setCards(cards);
+  }, [props.scan, props.cveData, props.deps, props.cweMap, props.libMap]);
 
   const preventDefault = (event, lib) => {
     event.preventDefault();
@@ -57,11 +61,9 @@ const VulnCards = (props) => {
   };
 
   const Container = () => {
-    let cards = groupBy(scan, "package");
-
     return (
       <Grid item container spacing={2}>
-        {Object.entries(cards).map((e) => {
+        {cards.map((e) => {
           let depname = e[0].split(":")[1];
           let importname = null;
           if (libMap[depname]) {
@@ -93,6 +95,18 @@ const VulnCards = (props) => {
                     >
                       libraries.io
                     </Link>
+
+                    <Typography
+                      variant="h6"
+                      style={{
+                        fontWeight: "300",
+                        display: "inline-block",
+                        float: "right",
+                      }}
+                    >
+                      Total CVSS Score:{" "}
+                      {e.totalscore.toPrecision(3).replace(/\.0+$/, "")}
+                    </Typography>
 
                     <div>
                       {e[1].map((x) => (
