@@ -11,7 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from "@material-ui/icons/Menu";
-import React from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import { Link, Redirect, Route, Switch } from "react-router-dom";
 import ProfileMenu from "./Menu";
 import CPEs from "./Pages/CPEs";
@@ -75,10 +75,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Application(props) {
-  const { window } = props;
   const classes = useStyles();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [toolbarName, setToolbarName] = React.useState("");
+  const [size, setSize] = useState(0);
+  const targetRef = useRef();
+
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize(targetRef.current.offsetWidth - 39);
+    }
+    window.addEventListener("resize", updateSize);
+    updateSize();
+    return () => window.removeEventListener("resize", updateSize);
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -136,7 +146,12 @@ function Application(props) {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="fixed" elevation={0} className={classes.appBar}>
+      <AppBar
+        ref={targetRef}
+        position="fixed"
+        elevation={0}
+        className={classes.appBar}
+      >
         <Toolbar>
           <IconButton
             color="inherit"
@@ -157,7 +172,6 @@ function Application(props) {
         {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Hidden smUp implementation="css">
           <Drawer
-            container={container}
             variant="temporary"
             anchor={VDTheme.direction}
             open={mobileOpen}
@@ -201,6 +215,7 @@ function Application(props) {
                   <Dashboard
                     changePage={(name) => setToolbarName(name)}
                     user={props.user}
+                    maxWidth={size}
                   />
                 )}
               </div>
