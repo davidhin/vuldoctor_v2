@@ -122,7 +122,7 @@ module.exports = {
     const auth = req.currentUser;
     if (auth) {
       const projects = await Project.findOne({ uid: auth.user_id });
-      return res.json(projects["projects"]);
+      return projects ? res.json(projects["projects"]) : res.json([]);
     }
     return res.status(403).send("Not authorized");
   },
@@ -180,6 +180,7 @@ module.exports = {
                   },
                 },
               },
+              { upsert: true },
               (err, results) => {
                 if (err) throw err;
               }
