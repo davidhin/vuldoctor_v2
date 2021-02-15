@@ -34,6 +34,7 @@ server/serviceAccount.json
 microservices/dep_check/__pycache__
 microservices/dep_check/db
 microservices/nvd_refresh/__pycache__
+microservices/cve_links/__pycache__
 microservices/nvd_refresh/downloads
 
 npm-debug.log*
