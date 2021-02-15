@@ -7,6 +7,7 @@ import axios from "axios";
 import queryString from "query-string";
 import React, { useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+import CVEDialog from "../Report/CVEDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -69,6 +70,7 @@ const CVEs = (props) => {
               <Paper className={classes.paper}>
                 <Typography variant="h5">{c.cve_id}</Typography>
                 <Typography variant="body1">{c.description}</Typography>
+                <CVEDialog cve_id={c.cve_id} cve_description={""} />
               </Paper>
             </Grid>
           ))}
