@@ -3,6 +3,7 @@ var cveCtrl = require("./controllers/cveController");
 var cpeCtrl = require("./controllers/cpeController");
 var ghCtrl = require("./controllers/ghController");
 var projectCtrl = require("./controllers/projectController");
+var capeccweCtrl = require("./controllers/capeccweController");
 
 var router = express.Router();
 
@@ -20,5 +21,6 @@ router.route("/updateProjectAuto").put(projectCtrl.updateProjectAuto);
 router.route("/updateProjectVulns").put(projectCtrl.updateProjectVulns);
 router.route("/deleteProject").delete(projectCtrl.deleteProject);
 router.route("/getHistory/:projectid").get(projectCtrl.getHistory);
+router.route("/getCapecs/:cweid").get(capeccweCtrl.getCapecs);
 
 module.exports = router;

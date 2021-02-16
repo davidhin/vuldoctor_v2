@@ -158,6 +158,7 @@ const VulnCards = (props) => {
                                   cve_id={x.id}
                                   cve_description={x.short_description}
                                   related_urls={x.related_urls}
+                                  cwe_id={cweMap[x.id] ? cweMap[x.id] : null}
                                 />
                               </Grid>
 

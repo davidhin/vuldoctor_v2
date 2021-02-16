@@ -36,6 +36,7 @@ const CVEs = (props) => {
     const getEntries = async () => {
       let results = await axios.get("/search/cve?search=" + search);
       setCves(results["data"]);
+      console.log(results["data"]);
     };
     if (typeof search !== "undefined") {
       getEntries();
@@ -70,7 +71,11 @@ const CVEs = (props) => {
               <Paper className={classes.paper}>
                 <Typography variant="h5">{c.cve_id}</Typography>
                 <Typography variant="body1">{c.description}</Typography>
-                <CVEDialog cve_id={c.cve_id} cve_description={""} />
+                <CVEDialog
+                  cve_id={c.cve_id}
+                  cve_description={""}
+                  cwe_id={c.problemType}
+                />
               </Paper>
             </Grid>
           ))}

@@ -15,6 +15,7 @@ export default function ScrollDialog(props) {
   const [open, setOpen] = React.useState(false);
   const scroll = "paper";
   const [urls, setUrls] = React.useState(null);
+  const [capecs, setCapecs] = React.useState(null);
 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
@@ -39,6 +40,14 @@ export default function ScrollDialog(props) {
       });
   };
 
+  const getCapecs = async (cwe_id) => {
+    if (cwe_id) {
+      await axios.get(`/getCapecs/${cwe_id}`).then((res) => {
+        setCapecs(res.data);
+      });
+    }
+  };
+
   const descriptionElementRef = React.useRef(null);
   React.useEffect(() => {
     if (open) {
@@ -47,6 +56,7 @@ export default function ScrollDialog(props) {
         descriptionElement.focus();
       }
       getSolUrls(props.cve_id);
+      getCapecs(props.cwe_id.split("-")[1]);
     }
   }, [open]);
 
@@ -80,34 +90,13 @@ export default function ScrollDialog(props) {
                 ? props.cve_description.replace("###", "### ")
                 : ""}
             </ReactMarkdown>
-
-            {props.related_urls ? (
-              <div>
-                {" "}
-                <Typography variant="h6">Related URLs</Typography>
-                {props.related_urls.map((x) => {
-                  return (
-                    <div>
-                      <Link href={x}>{x}</Link>
-                      <br />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              ""
-            )}
-
-            <br />
             {urls === null ? (
               <CircularProgress />
             ) : (
               <div>
                 {typeof urls !== "string" ? (
                   <div>
-                    <Typography variant="h6">
-                      References with solutions:
-                    </Typography>
+                    <Typography variant="h6">References:</Typography>
                     {urls.map((x) => {
                       return (
                         <div>
@@ -120,6 +109,34 @@ export default function ScrollDialog(props) {
                   </div>
                 ) : (
                   urls
+                )}
+              </div>
+            )}
+            <br />
+            {capecs === null ? (
+              <CircularProgress />
+            ) : (
+              <div>
+                {capecs.length === 0 ? (
+                  <p>{`No CAPECs for ${props.cwe_id}`}</p>
+                ) : (
+                  <div>
+                    <Typography variant="h6">
+                      CAPECs for {props.cwe_id}:
+                    </Typography>
+                    {capecs.map((x) => (
+                      <p>
+                        <Link
+                          href={`https://capec.mitre.org/data/definitions/${x.capec_id}.html#Mitigations`}
+                        >
+                          <Typography variant="h7">
+                            {"CAPEC-" + x.capec_id + ": "}
+                          </Typography>
+                          <Typography variant="body">{x.capec_name}</Typography>
+                        </Link>
+                      </p>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
