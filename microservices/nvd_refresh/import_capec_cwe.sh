@@ -1,0 +1,1 @@
+mongoimport --uri $MONGODB_TOKEN --collection capec_cwe --drop --file capec_cwe.json --jsonArray
