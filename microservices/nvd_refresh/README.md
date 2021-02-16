@@ -29,3 +29,8 @@ Run Docker Container Locally
 ```
 docker run --env PORT=5001 --env MONGODB_TOKEN=$MONGODB_TOKEN -p 5001:5001 gcr.io/solid-mantra-301604/nvdrefresh:latest
 ```
+
+### Upload CAPEC-CWE Mappings
+
+`python capec_cwe_mappings.py`
+Used to upload CAPEC/CWE mappings to mongoatlas
