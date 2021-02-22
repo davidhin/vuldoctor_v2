@@ -4,7 +4,7 @@ import shutil
 
 import pymongo
 import requests
-from flask import Blueprint, Response
+from flask import Blueprint, Response, request
 from flask_cors import CORS
 
 import nvd
@@ -28,6 +28,7 @@ def nvd_refresh():
         "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.meta"
     ).text
     nvdmeta = dict([i.split(":", 1) for i in nvdmeta.splitlines()])
+    force = request.args.get("force", default=1, type=str)
 
     # Get database last update metadata
     mongo_nvdmeta = client.main.nvdmeta
@@ -36,7 +37,7 @@ def nvd_refresh():
         mongo_nvdmeta.insert_one(nvdmeta)
 
     # If not updated since last time
-    if dbnvdmeta:
+    if dbnvdmeta and force != "true":
         if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
             return "Unchanged"
 
