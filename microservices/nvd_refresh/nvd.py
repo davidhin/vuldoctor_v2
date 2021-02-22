@@ -42,6 +42,7 @@ def pred_cvss(cvedf):
     cvedf["description_2"] = cvedf["description"]
     tp.transform_df(cvedf, reformat="stopstemprocessonly", columns=["description_2"])
     cvedf["predictedScore"] = cvedf["description_2"].progress_apply(pred_cvss_from_str)
+    cvedf = cvedf.drop(columns=["description_2"])
     return cvedf
 
 
