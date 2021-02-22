@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import Link from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
+import Tooltip from "@material-ui/core/Tooltip";
 import "@progress/kendo-theme-material/dist/all.css";
 import React, { useEffect, useState } from "react";
 import CVEDialog from "./CVEDialog";
@@ -41,6 +42,19 @@ const VulnCards = (props) => {
     setDeps(props.deps);
     setCweMap(props.cweMap);
     setLibMap(props.libMap);
+    let cveDict = props.cveData.reduce(function (map, obj) {
+      map[obj.cve_id] = obj;
+      return map;
+    }, {});
+    scan.map((s) => {
+      s["predictedScore"] = -1;
+      if (s.id.includes("CVE")) {
+        s["cvss_score"] = cveDict[s.id]["baseScore"];
+        s["severity"] = cveDict[s.id]["severity"];
+        s["predictedScore"] = cveDict[s.id]["predictedScore"];
+      }
+    });
+
     let cards = groupBy(scan, "package");
     cards = Object.entries(cards);
     cards = cards.map((c) => {
@@ -171,13 +185,29 @@ const VulnCards = (props) => {
                                 </Typography>
                                 <Typography
                                   style={{
-                                    fontWeight: x.cvss_score * 100 + 100,
+                                    fontWeight: x.cvss_score * 100,
                                     color: "#ff1744",
                                   }}
                                   variant="h3"
                                 >
                                   {x.cvss_score}
                                 </Typography>
+                                <Tooltip
+                                  title="What is this? Using NLP/ML, we predict
+CVSS score based on description. This can be helpful for vulnerabilities that have not
+been manually assessed. *Only works with CVE*"
+                                >
+                                  <Typography
+                                    style={{
+                                      fontWeight: x.predictedScore * 100,
+                                      color: "#ff1744",
+                                      fontSize: "11pt",
+                                    }}
+                                    variant="h3"
+                                  >
+                                    Predicted Score: {x.predictedScore}
+                                  </Typography>
+                                </Tooltip>
                               </Grid>
                             </Grid>
                           </Paper>

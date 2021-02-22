@@ -13,6 +13,7 @@ RUN apt-get install -y git
 RUN apt-get install -y bash
 RUN apt-get install -y sudo
 RUN apt-get install -y wget
+RUN apt-get install -y gcc g++
 
 # Install mongodbtools
 RUN TEMP_DEB="$(mktemp)" && \                                                        
@@ -27,6 +28,11 @@ RUN pip install google-cloud-storage
 RUN pip install firebase-admin
 RUN pip install 'pymongo[srv]'
 RUN pip install numpy
+RUN pip install tqdm
+RUN pip install so-processing
+RUN pip install scikit-learn
+RUN pip install pandas
+RUN pip install nltk
 RUN pip install tqdm
 
 # Run the web service on container startup. Here we use the gunicorn

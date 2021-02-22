@@ -97,7 +97,7 @@ function Application(props) {
   const drawer = (
     <div>
       <Typography variant="h5" noWrap className={classes.logo}>
-        VulDoctor <span style={{ fontSize: "10pt" }}>21.02.0-beta</span>
+        VulDoctor <span style={{ fontSize: "10pt" }}>21.02.1-beta</span>
       </Typography>
       <List>
         <ListItem

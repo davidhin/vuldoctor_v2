@@ -4,13 +4,16 @@ import shutil
 
 import pymongo
 import requests
-from flask import Blueprint, Response
+from flask import Blueprint, Response, request
 from flask_cors import CORS
 
 import nvd
 
 # Registering routes to 'routes' so they can be accessed in other files
-routes = Blueprint("urls", __name__,)
+routes = Blueprint(
+    "urls",
+    __name__,
+)
 CORS(routes)
 
 # Connect to mongodb
@@ -25,6 +28,7 @@ def nvd_refresh():
         "https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.meta"
     ).text
     nvdmeta = dict([i.split(":", 1) for i in nvdmeta.splitlines()])
+    force = request.args.get("force", default=1, type=str)
 
     # Get database last update metadata
     mongo_nvdmeta = client.main.nvdmeta
@@ -33,7 +37,7 @@ def nvd_refresh():
         mongo_nvdmeta.insert_one(nvdmeta)
 
     # If not updated since last time
-    if dbnvdmeta:
+    if dbnvdmeta and force != "true":
         if dbnvdmeta["sha256"] == nvdmeta["sha256"]:
             return "Unchanged"
 
@@ -47,7 +51,7 @@ def nvd_refresh():
 
     # Save data
     with open("cve.json", "w", encoding="utf-8") as f:
-        json.dump(cves.tolist(), f, ensure_ascii=False, indent=4)
+        json.dump(cves, f, ensure_ascii=False, indent=4)
 
     # Matched CVEs in database
     old_cves = nvd.get_cves_mongodb([i["cve_id"] for i in cves], client)
@@ -98,7 +102,7 @@ def nvd_drop_update():
 
     # Save data
     with open("cve.json", "w", encoding="utf-8") as f:
-        json.dump(cves.tolist(), f, ensure_ascii=False, indent=4)
+        json.dump(cves, f, ensure_ascii=False, indent=4)
 
     # Upload to mongodb
     os.system("bash import_drop.sh")

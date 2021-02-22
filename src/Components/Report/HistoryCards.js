@@ -5,7 +5,6 @@ import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import "@progress/kendo-theme-material/dist/all.css";
 import React, { useEffect, useState } from "react";
-import CVEDialog from "./CVEDialog";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,7 +66,7 @@ const VulnCards = (props) => {
             <Grid item container spacing={2}>
               {Object.entries(cards).map((e) => {
                 return (
-                  <Grid item xs={12}>
+                  <Grid item xs={12} md={6} lg={4}>
                     <Paper className={classes.paper}>
                       <Grid item container spacing={2}>
                         <Grid item xs={12}>
@@ -102,7 +101,7 @@ const VulnCards = (props) => {
                                   }}
                                 >
                                   <Grid item container>
-                                    <Grid item xs={4}>
+                                    <Grid item xs={6}>
                                       <Typography variant="h6">
                                         {x.id}
                                       </Typography>
@@ -120,29 +119,9 @@ const VulnCards = (props) => {
                                         Affects: {x.version}
                                       </Typography>
                                     </Grid>
-                                    <Grid item xs={5}>
-                                      <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                      >
-                                        Package Usage: {x.package_usage}
-                                      </Typography>
-                                      <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                      >
-                                        Severity: {x.severity}
-                                      </Typography>
-                                      <CVEDialog
-                                        cve_id={x.id}
-                                        cve_description={x.short_description}
-                                        related_urls={x.related_urls}
-                                      />
-                                    </Grid>
-
                                     <Grid
                                       item
-                                      xs={3}
+                                      xs={6}
                                       style={{ textAlign: "right" }}
                                     >
                                       <Typography

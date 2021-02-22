@@ -7,9 +7,43 @@ from os import listdir
 from os.path import isfile, join
 from pathlib import Path
 
+import joblib
 import numpy as np
+import pandas as pd
 import requests
+import so_textprocessing as stp
 from tqdm import tqdm
+
+tqdm.pandas()
+
+# Load models for CVSS prediction
+vectorizer = joblib.load("cvss_pred/tfidf.joblib")
+lda = joblib.load("cvss_pred/lda.joblib")
+clf = joblib.load("cvss_pred/lrclf.joblib")
+tp = stp.TextPreprocess()
+
+
+def pred_cvss_from_str(input_str):
+    """Get cvss score from string."""
+    input_tfidf = vectorizer.transform([input_str])
+    input_lda = lda.transform(input_tfidf.toarray())
+    return clf.predict(input_lda)[0]
+
+
+def pred_cvss(cvedf):
+    """Get predicted CVSS score given cve dataframe.
+
+    Args:
+        cvedf ([pandas df]): CVEDF needs a minimum of a "description column.
+
+    Returns:
+        [pandas df]: Dataframe with new predictedScore column
+    """
+    cvedf["description_2"] = cvedf["description"]
+    tp.transform_df(cvedf, reformat="stopstemprocessonly", columns=["description_2"])
+    cvedf["predictedScore"] = cvedf["description_2"].progress_apply(pred_cvss_from_str)
+    cvedf = cvedf.drop(columns=["description_2"])
+    return cvedf
 
 
 def nvdFeed(fileDirectory):
@@ -244,7 +278,10 @@ def parseJSON(fileDirectory):
         cve_dict = json.loads(jsonfile.read())
         jsonfile.close()
         all_cve_items += cve_dict["CVE_Items"]
-    return cveDictParse(all_cve_items)
+    cvedict = cveDictParse(all_cve_items)
+    cvedf = pd.DataFrame.from_records(cvedict)
+    cvedf = pred_cvss(cvedf)
+    return cvedf.to_dict("records")
 
 
 def get_cves_mongodb(cves, client):
