@@ -39,8 +39,9 @@ def pred_cvss(cvedf):
     Returns:
         [pandas df]: Dataframe with new predictedScore column
     """
-    tp.transform_df(cvedf, reformat="stopstemprocessonly", columns=["description"])
-    cvedf["predictedScore"] = cvedf["description"].progress_apply(pred_cvss_from_str)
+    cvedf["description_2"] = cvedf["description"]
+    tp.transform_df(cvedf, reformat="stopstemprocessonly", columns=["description_2"])
+    cvedf["predictedScore"] = cvedf["description_2"].progress_apply(pred_cvss_from_str)
     return cvedf
 
 
