@@ -56,7 +56,11 @@ export default function ScrollDialog(props) {
         descriptionElement.focus();
       }
       getSolUrls(props.cve_id);
-      getCapecs(props.cwe_id.split("-")[1]);
+      if (props.cwe_id) {
+        getCapecs(props.cwe_id.split("-")[1]);
+      } else {
+        setCapecs([]);
+      }
     }
   }, [open]);
 
