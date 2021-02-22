@@ -10,7 +10,10 @@ from flask_cors import CORS
 import nvd
 
 # Registering routes to 'routes' so they can be accessed in other files
-routes = Blueprint("urls", __name__,)
+routes = Blueprint(
+    "urls",
+    __name__,
+)
 CORS(routes)
 
 # Connect to mongodb
@@ -47,7 +50,7 @@ def nvd_refresh():
 
     # Save data
     with open("cve.json", "w", encoding="utf-8") as f:
-        json.dump(cves.tolist(), f, ensure_ascii=False, indent=4)
+        json.dump(cves, f, ensure_ascii=False, indent=4)
 
     # Matched CVEs in database
     old_cves = nvd.get_cves_mongodb([i["cve_id"] for i in cves], client)
@@ -98,7 +101,7 @@ def nvd_drop_update():
 
     # Save data
     with open("cve.json", "w", encoding="utf-8") as f:
-        json.dump(cves.tolist(), f, ensure_ascii=False, indent=4)
+        json.dump(cves, f, ensure_ascii=False, indent=4)
 
     # Upload to mongodb
     os.system("bash import_drop.sh")

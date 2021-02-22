@@ -28,6 +28,11 @@ RUN pip install firebase-admin
 RUN pip install 'pymongo[srv]'
 RUN pip install numpy
 RUN pip install tqdm
+RUN pip install so-processing
+RUN pip install scikit-learn
+RUN pip install pandas
+RUN pip install nltk
+RUN pip install tqdm
 
 # Run the web service on container startup. Here we use the gunicorn
 # webserver, with one worker process and 8 threads.
