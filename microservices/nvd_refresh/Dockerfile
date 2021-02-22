@@ -13,7 +13,7 @@ RUN apt-get install -y git
 RUN apt-get install -y bash
 RUN apt-get install -y sudo
 RUN apt-get install -y wget
-RUN apt-get install gcc g++
+RUN apt-get install -y gcc g++
 
 # Install mongodbtools
 RUN TEMP_DEB="$(mktemp)" && \                                                        
