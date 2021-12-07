@@ -19,7 +19,7 @@ Note: This software is primarily experimental, and hence requires some setup.
 
 ## `.env` file
 
-The .env file should be placed in the root directory. It contains the private keys to the services used. An example is displayed below, with obfuscation of keys, to show how the keys are referred to in the source code. Ripgrep may prove to be useful in the reverse engineering process.
+The .env file should be placed in the root directory. It contains the private keys to the services used. An example is displayed below, with obfuscation of keys, to show how the keys are referred to in the source code. Ripgrep may prove to be useful in the reverse engineering process. New accounts for each service should be made by the new maintainer.
 
 ```bash
 # Obtain from Firebase account
