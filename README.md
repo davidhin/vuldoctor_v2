@@ -2,6 +2,8 @@
 
 As modern software complexity increases, open-source dependencies are increasingly relied upon to efficiently incorporate functionality into these systems. Even if the software is securely designed, vulnerabilities in these third-party dependencies can lead to security breaches. VulDoctor is a web application utilizing machine learning and AI that allows users to dynamically track security vulnerabilities in their code repositories and receive updates on the newest vulnerabilities in the software component.
 
+A sample of the application can be found [here](https://vuldoctor2.herokuapp.com). However, all functionality may not be present.
+
 ## Running locally
 
 Note: This software is primarily experimental, and hence requires some setup.
