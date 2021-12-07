@@ -12,10 +12,36 @@ Note: This software is primarily experimental, and hence requires some setup.
 2. Install Node `nvm install node`
 3. Run `npm install` in root directory
 4. Run `npm install` in `./server`
-5. Copy `.env` into the root directory
+5. Copy `.env` into the root directory (see example of .env file below)
 6. Add `"proxy": "http://localhost:5000"` to the end of `package.json` in the root directory.
 7. Run `npm start` in one terminal to start the server.
 8. Run `npm run start-client` in another terminal to start the client.
+
+## `.env` file
+
+The .env file should be placed in the root directory. It contains the private keys to the services used. An example is displayed below, with obfuscation of keys, to show how the keys are referred to in the source code. Ripgrep may prove to be useful in the reverse engineering process.
+
+```bash
+# Obtain from Firebase account
+REACT_APP_FIREBASE_APIKEY="***"
+FIREBASE_PRIVATE_KEY_ID=="***"
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----***-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL="***@***.iam.gserviceaccount.com"
+FIREBASE_CLIENT_ID="***"
+FIREBASE_X509="https://www.googleapis.com/robot/v1/metadata/x509/***.iam.gserviceaccount.com"
+
+# Obtain from MongoDB Atlas
+MONGODB_TOKEN="mongodb+srv://davidhin:=***.mongodb.net/main?retryWrites=true&w=majority"
+MONGODB_PASSWORD="***"
+
+# Obtain from Google Cloud Services
+SOLID_MANTRA_PRIVATE_KEY_ID="***"
+SOLID_MANTRA_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----***=\n-----END PRIVATE KEY-----\n"
+
+# Set path after following instruction in mircroservices/dep_check/db
+VDB_HOME=/***/***/***/vuldoctor/microservices/dep_check/db
+```
+
 
 ## Architecture
 
