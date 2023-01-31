@@ -33,7 +33,7 @@
     "hammerjs": "^2.0.8",
     "material-table": "^1.69.2",
     "mongoose": "^5.11.11",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.20",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.2.4",
