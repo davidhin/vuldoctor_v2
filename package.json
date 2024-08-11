@@ -41,7 +41,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
     "short-uuid": "^4.1.0",
-    "shrink-string": "^3.0.9",
+    "shrink-string": "^3.1.9",
     "typeface-roboto": "^1.1.13",
     "web-vitals": "^0.2.4"
   },
